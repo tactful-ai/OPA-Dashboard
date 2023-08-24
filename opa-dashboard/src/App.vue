@@ -1,12 +1,17 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/roles">Roles</router-link>|
-    <router-link to="/resources">Resources</router-link>|
-    <router-link to="/permissions">Permissions</router-link>
-  </nav>
+  <Sidebar/>
   <router-view/>
 </template>
+
+<script>
+  import Sidebar from './components/Sidebar.vue';
+  export default {
+    name: 'App',
+    components: {
+      Sidebar,
+    },
+  };
+</script>
 
 <style>
 #app {
@@ -27,6 +32,6 @@ nav a {
 }
 
 nav a.router-link-exact-active {
-  color: #42b983;
+  color: #ff8737;
 }
 </style>
