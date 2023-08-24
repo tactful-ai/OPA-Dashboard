@@ -39,12 +39,28 @@ export default {
 <style scoped>
     *{
         font-size: 62.5%;
+        margin: 0;
+        padding: 0;
+    }
+    
+    nav {
+    padding: 30px;
+    height: 100%;
+    }
+
+    nav a {
+    font-weight: bold;
+    color: #2c3e50;
+    }
+
+    nav a.router-link-exact-active {
+    color: #ff8737;
     }
 
     nav {
         background-color: #F2F8FF;
         float: left;
-        position: fixed;
+        position: relative;
         z-index: 1;
         top: 0;
         left: 0;
