@@ -48,18 +48,39 @@ import AddRole from './AddRole.vue'
 export default defineComponent({
     name: 'RolesView',
     components: {
+        /**
+         * @component
+         * @see {@link AddRole}
+         * @description A modal for adding a new role
+         */
         AddRole
     },
     data(){
         return {
+            /**
+             * @property {Array} roles - An array of roles
+             * @default [] 
+             */
             roles:[],
+            /**
+             * @property {Boolean} showModal - A boolean to toggle the modal
+             * @default false
+             */
             showModal: false,
         }
     },
     methods:{
+        /**
+         * @method toggleModal - Toggles the showModal property to display the AddRole modal
+         */
         toggleModal() {
             this.showModal = !this.showModal
         },
+        /**
+         * @method displayRoles - Fetches the roles from the backend
+         * @async
+         * Modifies the roles property
+         */
         async displayRoles(){
             console.log('displaying roles...')
             try {
@@ -77,12 +98,15 @@ export default defineComponent({
                 console.error(error);
             }
         },
+        /**
+         * @method onAdd - Adds a new role to the roles array
+         * @param {Object} newRole - The new role to be added
+         */
         onAdd(newRole) {
             this.roles.push(newRole);
         }
     },
     watch: {
-        // keep watch on the roles array
         roles: {
             handler(newRoles) {
                 console.log('roles changed')
@@ -93,15 +117,6 @@ export default defineComponent({
     },
     mounted() {
         this.displayRoles()
-        // try{
-        //     axios.get('https://ef92-102-184-248-230.ngrok-free.app/roles')
-        //     .then(response => {
-        //         this.roles = response.data.roles;
-        //         console.log(response.data)
-        //     })
-        // } catch (error) {
-        //     console.error(error);
-        // }
     }
 })
 </script>

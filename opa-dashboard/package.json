@@ -5,7 +5,9 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "vue-cli-service test:unit",
+    "styleguide": "vue-cli-service styleguidist",
+    "styleguide:build": "vue-cli-service styleguidist:build"
   },
   "dependencies": {
     "axios": "^1.4.0",
@@ -27,6 +29,9 @@
     "babel-jest": "^27.0.6",
     "jest": "^27.0.5",
     "ts-jest": "^27.0.4",
-    "typescript": "~4.5.5"
+    "typescript": "~4.5.5",
+    "vue-cli-plugin-styleguidist": "~4.72.4",
+    "vue-styleguidist": "^4.72.4",
+    "webpack": "^5.88.2"
   }
 }
