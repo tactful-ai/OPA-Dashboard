@@ -42,7 +42,7 @@ export default {
         },
         async handleAdd(){
             console.log('adding a new role...')
-            const url = 'https://39a3-197-133-57-78.ngrok-free.app/roles'
+            const url = 'https://2813-196-221-26-152.ngrok-free.app/roles'
             const config = {
                 headers: {
                     "ngrok-skip-browser-warning": "true",
@@ -58,11 +58,11 @@ export default {
             const response = await axios.post(url, data, config)
             console.log(response)
             this.closeModal()
-            this.$emit('add')
+            this.$emit('add', data)
         },
         async handleDelete(){
             console.log('deleting a role...')
-            const url = 'https://39a3-197-133-57-78.ngrok-free.app/roles'
+            const url = 'https://2813-196-221-26-152.ngrok-free.app/roles'
             const headers = {
                 "ngrok-skip-browser-warning": "true",
             }

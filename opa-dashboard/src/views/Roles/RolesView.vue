@@ -2,7 +2,7 @@
 
     <transition name="fade">
         <!-- exit animation works, enter animation does not -->
-        <AddRole v-if="showModal" @close="toggleModal" @add="displayRoles"/>
+        <AddRole v-if="showModal" @close="toggleModal" @add="onAdd"/>
     </transition>
 
     <div class="roles">
@@ -34,7 +34,7 @@
     </div>
 </template>
 
-<script lang='ts'>
+<script>
 import { defineComponent } from "vue"
 import axios from 'axios'
 import AddRole from './AddRole.vue'
@@ -64,7 +64,7 @@ export default defineComponent({
             console.log('displaying roles...')
             try {
             // const response = await axios.get('https://jsonplaceholder.typicode.com/todos');
-            const url: string = 'https://39a3-197-133-57-78.ngrok-free.app/roles'
+            const url= 'https://2813-196-221-26-152.ngrok-free.app/roles'
             const config = {
                 headers: {
                     "ngrok-skip-browser-warning": "true",
@@ -73,9 +73,22 @@ export default defineComponent({
             const response = await axios.get(url, config);
             this.roles = response.data.roles;
             console.log(response.data)
-        } catch (error) {
-            console.error(error);
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        onAdd(newRole) {
+            this.roles.push(newRole);
         }
+    },
+    watch: {
+        // keep watch on the roles array
+        roles: {
+            handler(newRoles) {
+                console.log('roles changed')
+                console.log(newRoles)
+            },
+            deep: false
         }
     },
     mounted() {
