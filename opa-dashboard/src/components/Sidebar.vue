@@ -99,7 +99,8 @@ export default {
     }
 
     li:hover {
-        background-color: rgb(49, 111, 255);
+        /* background-color: rgb(49, 111, 255); */
+        background-color: #CDE77F;
     }
     
     .menu-item{
