@@ -13,7 +13,7 @@
                     <button v-if="mode === 'add'">Add Role</button>
                     <div v-else-if="mode === 'edit'">
                         <button @click.prevent="handleDelete">Delete Role</button>
-                        <button>Save Changes</button>
+                        <button @click.prevent="handleEdit">Save Changes</button>
                     </div>
                 </div>
             </form>
@@ -98,6 +98,25 @@ export default {
                 }
                 console.log(data)
                 const response = await axios.delete(url, {data: data, headers: config.headers})
+                console.log(response)
+                this.$emit('add')
+                this.closeModal()
+            } catch (err){
+                console.log(err)
+                this.$emit('add')
+            }
+        },
+
+        async handleEdit(){
+            try{
+                console.log('editing a role...')
+                const data = {
+                    "role": this.selected_role_name,
+                    "newRole":this.role_name,
+                    "newRoleDescription": this.role_description
+                }
+                console.log(data)
+                const response = await axios.put(url,data,config)
                 console.log(response)
                 this.$emit('add')
                 this.closeModal()
