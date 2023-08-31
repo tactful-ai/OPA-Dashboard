@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import RolesView from '../views/Roles/RolesView.vue'
-import ResourcesView from '../views/ResourcesView.vue'
+import ResourcesView from '../views/Resources/ResourcesView.vue'
 import PermissionsView from '../views/PermissionsView.vue'
 
 const routes: Array<RouteRecordRaw> = [
