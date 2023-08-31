@@ -1,10 +1,9 @@
 <template>
-
     <transition name="fade">
         <!-- exit animation works, enter animation does not -->
-        <AddRole v-if="showModal" @close="toggleModal" @add="displayRoles"/>
+        <!-- send selected role name and permission as empty -->
+        <AddRole v-if="showModal" @close="toggleModal" @add="displayRoles" mode="add"/>
     </transition>
-
     <div class="roles">
         <div class="page-heading">
             <img src="./../../assets/roles.svg" alt="">
@@ -23,7 +22,13 @@
                     </tr>
                 </thead>
                 <tbody v-for="role in roles" :key='role.id'>
-                    <tr>
+                    <AddRole v-show="selectedRole === role" 
+                    @close="selectedRole = null" 
+                    @add="displayRoles" 
+                    :selected_role_name="role.role" 
+                    :selected_role_description="role.description"
+                    mode="edit"/>
+                    <tr @click= "selectedRole = role">
                         <td>{{ role.role }}</td>
                         <td>{{ role.description }}</td>
                     </tr>
@@ -39,32 +44,35 @@ import { defineComponent } from "vue"
 import axios from 'axios'
 import AddRole from './AddRole.vue'
 
-// axios
-// proper error handling and notifications
-// dont forget to edit roles
-// conceptual diagrams relating vue components, handbook for styling
-// today: link with the backend
+interface Role {
+  role: string;
+  description: string;
+}
 
 export default defineComponent({
     name: 'RolesView',
+
     components: {
         AddRole
     },
+
     data(){
         return {
-            roles:[],
+            roles: [] as Role[],
             showModal: false,
+            selectedRole: null
         }
     },
+
     methods:{
         toggleModal() {
             this.showModal = !this.showModal
         },
+
         async displayRoles(){
             console.log('displaying roles...')
             try {
-            // const response = await axios.get('https://jsonplaceholder.typicode.com/todos');
-            const url: string = 'https://39a3-197-133-57-78.ngrok-free.app/roles'
+            const url: string = process.env.VUE_APP_BASE_URL + 'roles'
             const config = {
                 headers: {
                     "ngrok-skip-browser-warning": "true",
@@ -73,22 +81,27 @@ export default defineComponent({
             const response = await axios.get(url, config);
             this.roles = response.data.roles;
             console.log(response.data)
-        } catch (error) {
-            console.error(error);
-        }
+            } catch (error) {
+                console.error(error);
+                this.roles = [
+                    {
+                        'role': "role1",
+                        'description': "desc1",
+                    },
+                    {
+                        'role': "role2",
+                        'description': "desc2",
+                    },
+                    {
+                        'role': "role3",
+                        'description': "desc3",
+                    },
+                ]
+            }
         }
     },
     mounted() {
         this.displayRoles()
-        // try{
-        //     axios.get('https://ef92-102-184-248-230.ngrok-free.app/roles')
-        //     .then(response => {
-        //         this.roles = response.data.roles;
-        //         console.log(response.data)
-        //     })
-        // } catch (error) {
-        //     console.error(error);
-        // }
     }
 })
 </script>
@@ -148,6 +161,7 @@ tbody tr {
 tbody tr:hover {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
     transform: translateY(-5px);
+    cursor: pointer;
 }
 
 table td:nth-child(2),

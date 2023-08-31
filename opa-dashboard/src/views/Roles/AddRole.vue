@@ -1,7 +1,8 @@
 <template>
     <div class="backdrop" @click.self="closeModal">
         <div class="modal">
-            <h1>Add a New Role</h1>
+            <h1 v-if="mode === 'add'">Add a New Role</h1>
+            <h1 v-else-if="mode === 'edit'">Edit Role</h1>
             <form class="actions" @submit.prevent="handleAdd">
                 <label for="">Role Name: </label>
                 <input type="text" v-model="role_name">
@@ -9,7 +10,11 @@
                 <textarea v-model="role_description"> </textarea>
                 <div class="btns-container">
                     <button class="close" @click.prevent="closeModal">Cancel</button>
-                    <button>Add Role</button>
+                    <button v-if="mode === 'add'">Add Role</button>
+                    <div v-else-if="mode === 'edit'">
+                        <button @click.prevent="handleDelete">Delete Role</button>
+                        <button>Save Changes</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -18,61 +23,94 @@
 
 <script>
 import axios from 'axios'
+const url = process.env.VUE_APP_BASE_URL + 'roles'
+const config = {
+    headers: {
+        "ngrok-skip-browser-warning": "true",
+    }
+}
 
 export default {
     name: 'Modal',
-    props: ['selected_role', 'selected_description'],
+    props: ['selected_role_name', 'selected_role_description', 'mode'],
     data(){
         return{
             role_name: '',
             role_description: ''
         }
     },
-    watch: {
-        selected_role(newRole) {
-            this.role_name = newRole;
-        },
-        selected_description(newDescription) {
-            this.role_description = newDescription;
-        }
-    },
+    // computed: {
+    //     role_name: {
+    //         get() {
+    //             return this.selected_role_name;
+    //         },
+    //         set(value) {
+    //             this.$emit('update:selected_role_name', value);
+    //         }
+    //     },
+    //     role_description: {
+    //         get() {
+    //             return this.selected_role_description;
+    //         },
+    //         set(value) {
+    //             this.$emit('update:selected_role_description', value);
+    //         }
+    //     }
+    // },
+    // watch: {
+    //     role_name(val) {
+    //         console.log('role_name changed to: ' + val);
+    //     },
+    //     role_description(val) {
+    //         console.log('role_description changed to: ' + val);
+    //     }
+    // },
     methods: {
         closeModal(){
             this.$emit('close')
         },
+
         async handleAdd(){
-            console.log('adding a new role...')
-            const url = 'https://39a3-197-133-57-78.ngrok-free.app/roles'
-            const config = {
-                headers: {
-                    "ngrok-skip-browser-warning": "true",
+            try{
+                console.log('adding a new role...')
+                const data = {
+                    "role": this.role_name,
+                    "description": this.role_description
                 }
+                console.log(this.role_name)
+                console.log(this.role_description)
+                console.log(data)
+                const response = await axios.post(url, data, config)
+                console.log(response)
+                this.closeModal()
+                this.$emit('add')
+            } catch (err){
+                console.log(err)
+                this.$emit('add')
             }
-            const data = {
-                "role": this.role_name,
-                "description": this.role_description
-            }
-            console.log(this.role_name)
-            console.log(this.role_description)
-            console.log(data)
-            const response = await axios.post(url, data, config)
-            console.log(response)
-            this.closeModal()
-            this.$emit('add')
         },
         async handleDelete(){
-            console.log('deleting a role...')
-            const url = 'https://39a3-197-133-57-78.ngrok-free.app/roles'
-            const headers = {
-                "ngrok-skip-browser-warning": "true",
-            }
-            const data = {
+            try{
+                console.log('deleting a role...')
+                const data = {
                 "role": this.role_name,
-                "description": this.role_description
+                // "description": this.role_description
+                }
+                console.log(data)
+                const response = await axios.delete(url, {data: data, headers: config.headers})
+                console.log(response)
+                this.$emit('add')
+                this.closeModal()
+            } catch (err){
+                console.log(err)
+                this.$emit('add')
             }
-            const response = await axios.delete(url, {data, headers})
-            console.log(response)
-            this.closeModal()
+        }
+    },
+    mounted() {
+        if (this.selected_role_name && this.selected_role_description){
+            this.role_name = this.selected_role_name
+            this.role_description = this.selected_role_description
         }
     }
 }
@@ -141,12 +179,12 @@ export default {
   .btns-container{
         display: flex;
         justify-content: space-between;
-        margin-top: 3em;
-        
+        margin-top: 3em;   
   }
 
   button{
-      padding: 1em 2em;
+      padding: 1em;
+      margin: 1em;
       border-radius: 5px;
       border: none;
       background-color: #519E8A;

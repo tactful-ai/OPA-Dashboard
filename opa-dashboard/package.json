@@ -27,6 +27,8 @@
     "babel-jest": "^27.0.6",
     "jest": "^27.0.5",
     "ts-jest": "^27.0.4",
-    "typescript": "~4.5.5"
+    "typescript": "~4.5.5",
+    "vue-styleguidist": "^4.72.4",
+    "webpack": "^5.88.2"
   }
 }
