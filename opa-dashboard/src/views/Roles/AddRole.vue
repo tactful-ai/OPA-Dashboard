@@ -32,10 +32,20 @@ const config = {
 
 export default {
     name: 'Modal',
+    
     props: ['selected_role_name', 'selected_role_description', 'mode'],
+
     data(){
         return{
+            /**
+             * @property {String} role_name - The name of the role to be added data-bound to the input field
+             * @default ''
+             */
             role_name: '',
+            /**
+             * @property {String} role_description - The description of the role to be added data-bound to the input field
+             * @default ''
+             */
             role_description: ''
         }
     },
@@ -66,10 +76,17 @@ export default {
     //     }
     // },
     methods: {
+        /**
+         * @method closeModal - Emits a close event to the parent component to close the modal
+         */
         closeModal(){
             this.$emit('close')
         },
 
+        /**
+         * @method handleAdd - Handles the addition of a new role by sending a POST request to the backend
+         * Emits an add event to the parent component to add the new role to the list of roles
+         */
         async handleAdd(){
             try{
                 console.log('adding a new role...')

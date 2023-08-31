@@ -39,7 +39,7 @@
     </div>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import { defineComponent } from "vue"
 import axios from 'axios'
 import AddRole from './AddRole.vue'
@@ -53,6 +53,11 @@ export default defineComponent({
     name: 'RolesView',
 
     components: {
+        /**
+         * @component
+         * @see {@link AddRole}
+         * @description A modal for adding a new role
+         */
         AddRole
     },
 
@@ -65,6 +70,9 @@ export default defineComponent({
     },
 
     methods:{
+        /**
+         * @method toggleModal - Toggles the showModal property to display the AddRole modal
+         */
         toggleModal() {
             this.showModal = !this.showModal
         },
