@@ -65,9 +65,11 @@ export default {
             resource_name: '',
             scopes: [],
             tempScope: '',
-            scopesToDelete: [],
-            scopeAdded: false,
-            scopeRemoved: false,
+            // scopesToDelete: [],
+            // can only delete one scope for now,
+            originalResourceName: '',
+            scopeToDelete: '',
+            scopesToAdd: [],
         }
     },
 
@@ -79,15 +81,16 @@ export default {
             if(this.tempScope && e.key == 'Enter'){
                 if(!this.scopes.includes(this.tempScope)){
                     this.scopes.push(this.tempScope.trim())
-                    this.scopeAdded = true
+                    this.scopesToAdd.push(this.tempScope.trim())
                 }
                 this.tempScope = ''
             }
         },
         removeScope(scope){
             this.scopes = this.scopes.filter(s => s !== scope)
-            this.scopesToDelete.push(scope)
-            this.scopeRemoved = true
+            this.scopesToAdd = this.scopesToAdd.filter(s => s !== scope)
+            // this.scopesToDelete.push(scope)
+            this.scopeToDelete = scope
         },
         async submitResource(){
             try{
@@ -149,7 +152,7 @@ export default {
                 console.log('adding scope...')
                 const data = {
                     resource: this.resource_name,
-                    scopes: this.scopes
+                    scopes: this.scopesToAdd
                 }
                 console.log(data)
                 const res = await axios.post(scopes_url, data, config)
@@ -177,12 +180,17 @@ export default {
             }
         },
         async handleEdit(){
-            if(this.scopeAdded){
-                await this.submitScope()
-            } else if(this.scopeRemoved){
-                await this.deleteScope()
-            } else if (this.resource_name !== this.selected_resource_name){
+            if (this.resource_name !== this.originalResourceName){
+                console.log('resource name changed')
                 await this.editResource()
+            }
+            if (this.scopesToAdd.length > 0){
+                console.log('scopes to add: ', this.scopesToAdd)
+                await this.submitScope()
+            }
+            if (this.scopeToDelete){
+                console.log('scope to delete: ', this.scopeToDelete)
+                await this.deleteScope()
             }
         }
     },
@@ -193,6 +201,7 @@ export default {
             // this.scopes = this.selected_resource_scopes
             // deep copy selected_resource_scopes into scopes
             this.scopes = JSON.parse(JSON.stringify(this.selected_resource_scopes))
+            this.originalResourceName = this.selected_resource_name
         }
         console.log(this.mode)
     }
