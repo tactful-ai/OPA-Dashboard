@@ -2,7 +2,11 @@
     <transition name="fade">
         <!-- exit animation works, enter animation does not -->
         <!-- send selected role name and permission as empty -->
-        <ResourceModal v-if="showModal" @close="toggleModal" @add="displayResources" mode="add"/>
+        <ResourceModal 
+        v-if="showModal" 
+        @close="toggleModal" 
+        @update="fetchResources" 
+        mode="add"/>
     </transition>
     <div class="resources">
         <div class="page-heading">
@@ -22,11 +26,14 @@
                     </tr>
                 </thead>
                 <tbody v-for="(values, key) in resources" :key="key">
-                    <ResourceModal v-show="selectedResource === resource" 
+                    <ResourceModal 
+                    v-if="selectedResource === key" 
                     @close="selectedResource = null" 
-                    @add="fetchResources" 
+                    @update="fetchResources" 
+                    :selected_resource_name="key"
+                    :selected_resource_scopes="values"
                     mode="edit"/>
-                    <tr @click= "selectedResource = resource">
+                    <tr @click= "selectedResource = key">
                         <td>{{ key }}</td>
                         <td>
                             <span class="pill" v-for="scope in values" :key='scope'>
@@ -94,6 +101,11 @@ export default defineComponent({
                 console.log(Object.keys(this.resources).length)
             } catch (error){
                 console.log(error)
+                this.resources = {
+                    "book": ["read","order","review"],
+                    "document": ["read","order","review"],
+                    "email": ["read","send"]
+                }
             }
         }
     },
@@ -219,7 +231,8 @@ tr td:nth-child(2) {
     display: inline-block;
     margin: 0 0.5em;
     padding: 1em 2em;
-    background: #ff9a56;
+    /* background: #ff9a56; */
+    background: #aaaaaa;
     border-radius: 20px;
     font-size: 0.8rem;
     letter-spacing: 1px;
@@ -232,6 +245,13 @@ tr td:nth-child(2) {
 .pill:hover{
     filter: brightness(120%);
     cursor: default;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
 }
 
 </style>
