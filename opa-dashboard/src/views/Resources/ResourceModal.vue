@@ -34,7 +34,7 @@
 
                     <div class="actions" v-else-if="mode === 'edit'">
                         <button @click.prevent="deleteResource">Delete Resource</button>
-                        <button @click.prevent="handleEdit">Save Changes</button>
+                        <button @click.prevent="editResourceAndScopes">Save Changes</button>
                     </div>
 
                 </div>
@@ -65,11 +65,8 @@ export default {
             resource_name: '',
             scopes: [],
             tempScope: '',
-            // scopesToDelete: [],
-            // can only delete one scope for now,
             originalResourceName: '',
-            scopeToDelete: '',
-            scopesToAdd: [],
+            scopesChanged: false,
         }
     },
 
@@ -78,19 +75,25 @@ export default {
             this.$emit('close')
         },
         addScope(e){
+            // check if this.scopes is null
+            if(!this.scopes){
+                this.scopes = []
+            }
             if(this.tempScope && e.key == 'Enter'){
                 if(!this.scopes.includes(this.tempScope)){
                     this.scopes.push(this.tempScope.trim())
-                    this.scopesToAdd.push(this.tempScope.trim())
+                    // this.scopesToAdd.push(this.tempScope.trim())
+                    this.scopesChanged = true
                 }
                 this.tempScope = ''
             }
         },
         removeScope(scope){
             this.scopes = this.scopes.filter(s => s !== scope)
-            this.scopesToAdd = this.scopesToAdd.filter(s => s !== scope)
+            // this.scopesToAdd = this.scopesToAdd.filter(s => s !== scope)
             // this.scopesToDelete.push(scope)
             this.scopeToDelete = scope
+            this.scopesChanged = true
         },
         async submitResource(){
             try{
@@ -131,28 +134,14 @@ export default {
                 console.log(err)
             }
         },
-        async editResource(){
-            try{
-                console.log('editing resource...')
-                const data = {
-                    resource: this.selected_resource_name,
-                    newResource: this.resource_name,
-                }
-                console.log(data)
-                const res = await axios.put(resources_url, data, config)
-                console.log(res)
-                this.$emit('update')
-                this.closeModal()
-            } catch(err){
-                console.log(err)
-            }
-        },
+
         async submitScope(){
             try{
                 console.log('adding scope...')
                 const data = {
                     resource: this.resource_name,
-                    scopes: this.scopesToAdd
+                    // scopes: this.scopesToAdd
+                    scopes: this.scopes
                 }
                 console.log(data)
                 const res = await axios.post(scopes_url, data, config)
@@ -179,31 +168,46 @@ export default {
                 console.log(err)
             }
         },
-        async handleEdit(){
-            if (this.resource_name !== this.originalResourceName){
-                console.log('resource name changed')
-                await this.editResource()
+        async editResourceAndScopes(){
+            try{
+                console.log('editing scope...')
+                let data = null
+                if(this.resource_name !== this.originalResourceName){
+                    console.log('resource name changed')
+                    data = {
+                        resource: this.originalResourceName,
+                        newResource: this.resource_name,
+                        scopes: this.scopes
+                    }
+                } else {
+                    console.log('resource name did not change')
+                    data = {
+                        resource: this.resource_name,
+                        scopes: this.scopes
+                    }
+                }
+                console.log(data)
+                const res = await axios.post(scopes_url, data, config)
+                console.log(res)
+                this.$emit('update')
+                this.closeModal()
+            } catch(err){
+                console.log(err)
             }
-            if (this.scopesToAdd.length > 0){
-                console.log('scopes to add: ', this.scopesToAdd)
-                await this.submitScope()
-            }
-            if (this.scopeToDelete){
-                console.log('scope to delete: ', this.scopeToDelete)
-                await this.deleteScope()
-            }
-        }
+        },
     },
 
     mounted(){
         if(this.mode === 'edit'){
             this.resource_name = this.selected_resource_name
-            // this.scopes = this.selected_resource_scopes
             // deep copy selected_resource_scopes into scopes
             this.scopes = JSON.parse(JSON.stringify(this.selected_resource_scopes))
+            if (this.scopes === null){
+                this.scopes = []
+            }
             this.originalResourceName = this.selected_resource_name
         }
-        console.log(this.mode)
+        console.log(this.scopes.length)
     }
 }
 </script>
