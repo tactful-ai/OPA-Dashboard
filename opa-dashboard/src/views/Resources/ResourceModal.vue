@@ -212,7 +212,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .backdrop{
         position: fixed;
         top: 0;
@@ -283,6 +283,15 @@ form button:hover{
 }
 
 .scopes-container .pill{
+    display: inline-block;
+    /* background: #ff9a56; */
+    background: #aaaaaa;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    font-weight: bold;
+    color: black;
+
     margin: 0.5em;
     padding: 1em;
     cursor: pointer;
