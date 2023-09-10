@@ -1,28 +1,28 @@
 <template>
     <nav>
-        <img src="./../assets/dstnyEngage-logo.webp" alt="">
+        <img :src="require('./../assets/dstnyEngage-logo.webp')" alt="">
             <ul>
                 <li>
                     <router-link to="/" class='menu-item'>
-                        <img src="./../assets/dashboard.svg" alt="">
+                        <img :src="require('./../assets/dashboard.svg')" alt="">
                         <span> Dashboard </span>
                     </router-link> 
                 </li>
                 <li>
                     <router-link to="/roles" class='menu-item'>
-                        <img src="./../assets/roles.svg" alt="">
+                        <img :src="require('./../assets/roles.svg')" alt="">
                         <span> Roles </span>
                     </router-link> 
                 </li>
                 <li>
                     <router-link to="/resources" class='menu-item'>
-                        <img src="./../assets/resources.svg" alt="">
+                        <img :src="require('./../assets/resources.svg')" alt="">
                         <span> Resources </span>
                     </router-link> 
                 </li>
                 <li>
                     <router-link to="/permissions" class='menu-item'>
-                        <img src="./../assets/permissions.svg" alt="">
+                        <img :src="require('./../assets/permissions.svg')" alt="">
                         <span> Permissions </span>
                     </router-link> 
                 </li>

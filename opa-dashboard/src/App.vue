@@ -1,36 +1,35 @@
 <template>
-  <div class="wrapper">
-    <Sidebar/>
-    <router-view/>
-  </div>
+  <v-app>
+    <v-main>
+      <div class="wrapper">
+          <Sidebar/>
+          <router-view/>
+      </div>  
+    </v-main>
+  </v-app>
 </template>
 
-<script>
-  import Sidebar from './components/Sidebar.vue';
-  export default {
-    name: 'App',
-    components: {
-      Sidebar,
-    },
-  };
+<script lang="ts">
+import { defineComponent } from 'vue'
+import Sidebar from './components/Sidebar.vue'
+
+export default defineComponent({
+  name: 'App',
+
+  components: {
+    Sidebar,
+  },
+
+  data () {
+    return {
+      //
+    }
+  },
+})
 </script>
 
 <style>
-*{
-  margin: 0;
-  padding: 0;
-  /* font-size: 62.5%; */
-}
-
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-.wrapper {
+.wrapper{
   display: flex;
   height: 100vh;
 }

@@ -6,7 +6,7 @@
     </transition>
     <div class="roles">
         <div class="page-heading">
-            <img src="./../../assets/roles.svg" alt="">
+            <img :src="require('./../../assets/roles.svg')" alt="">
             <span> Roles </span>
         </div>
         <div class="btns-container">

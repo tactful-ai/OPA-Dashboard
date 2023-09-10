@@ -10,14 +10,19 @@
     "styleguide:build": "vue-cli-service styleguidist:build"
   },
   "dependencies": {
+    "@mdi/font": "5.9.55",
     "axios": "^1.4.0",
     "core-js": "^3.8.3",
+    "roboto-fontface": "*",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
-    "vuex": "^4.0.0"
+    "vuetify": "^3.0.0-beta.0",
+    "vuex": "^4.0.0",
+    "webfontloader": "^1.0.0"
   },
   "devDependencies": {
     "@types/jest": "^27.0.1",
+    "@types/webfontloader": "^1.0.0",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-router": "~5.0.0",
     "@vue/cli-plugin-typescript": "~5.0.0",
@@ -31,7 +36,9 @@
     "ts-jest": "^27.0.4",
     "typescript": "~4.5.5",
     "vue-cli-plugin-styleguidist": "~4.72.4",
+    "vue-cli-plugin-vuetify": "~2.5.8",
     "vue-styleguidist": "^4.72.4",
-    "webpack": "^5.88.2"
+    "webpack": "^5.88.2",
+    "webpack-plugin-vuetify": "^2.0.0-alpha.0"
   }
 }
