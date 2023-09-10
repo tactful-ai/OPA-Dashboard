@@ -2,8 +2,17 @@
     <transition name="fade">
         <!-- exit animation works, enter animation does not -->
         <!-- send selected role name and permission as empty -->
-        <AddRole v-if="showModal" @close="toggleModal" @add="displayRoles" mode="add"/>
+        <AddRole v-if="showModal" @close="toggleModal" @add="displayRoles" mode="add" @loadingOn="isLoading = true" @loadingOff="isLoading = false"/>
     </transition>
+
+    <div class="spinner-container" v-show='isLoading'>
+        <fulfilling-bouncing-circle-spinner
+        :animation-duration="2000"
+        :size="60"
+        color="#0B3954"
+        />
+    </div>
+    
     <div class="roles">
         <div class="page-heading">
             <img src="./../../assets/roles.svg" alt="">
@@ -43,6 +52,7 @@
 import { defineComponent } from "vue"
 import axios from 'axios'
 import AddRole from './AddRole.vue'
+import { FulfillingBouncingCircleSpinner } from 'epic-spinners'
 
 interface Role {
   role: string;
@@ -58,7 +68,8 @@ export default defineComponent({
          * @see {@link AddRole}
          * @description A modal for adding a new role
          */
-        AddRole
+        AddRole,
+        FulfillingBouncingCircleSpinner,
     },
 
     data(){
@@ -67,6 +78,7 @@ export default defineComponent({
             showModal: false,
             selectedRole: null,
             searchTerm:'',
+            isLoading: true,
         }
     },
 
@@ -88,6 +100,7 @@ export default defineComponent({
         },
 
         async displayRoles(){
+            this.isLoading = true
             console.log('displaying roles...')
             try {
             const url: string = process.env.VUE_APP_BASE_URL + 'roles'
@@ -116,6 +129,7 @@ export default defineComponent({
                     },
                 ]
             }
+            this.isLoading = false
         }
     },
     mounted() {
@@ -127,6 +141,19 @@ export default defineComponent({
 <style scoped>
 *{
     box-sizing: border-box;
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .roles{

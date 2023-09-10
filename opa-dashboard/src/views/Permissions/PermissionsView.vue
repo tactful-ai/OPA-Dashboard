@@ -1,4 +1,12 @@
 <template>
+  <div class="spinner-container" v-if='isLoading'>
+        <fulfilling-bouncing-circle-spinner
+        :animation-duration="2000"
+        :size="60"
+        color="#0B3954"
+        />
+  </div>
+
   <div class="permissions">
     <div class="page-heading">
       <img src="./../../assets/permissions.svg" alt="" />
@@ -51,6 +59,7 @@
 <script lang='ts'>
 import { defineComponent } from "vue";
 import axios from "axios";
+import { FulfillingBouncingCircleSpinner } from 'epic-spinners';
 
 interface Permissions {
   [key: string]: string[];
@@ -95,10 +104,16 @@ export default defineComponent({
 
       searchTerm: '',
 
+      isLoading: false,
+
       roles: [] as Role[],
       resources: {} as Resource,
 
     };
+  },
+
+  components: {
+    FulfillingBouncingCircleSpinner
   },
 
   computed: {
@@ -212,6 +227,7 @@ export default defineComponent({
 
     async fetchPermissions(): Promise<void> {
       // Fetch the permissions from the API and update the permissions object
+      this.isLoading = true
       try{
         console.log('fetching permissions...')
         const { data } = await axios.get(url, config);
@@ -219,6 +235,8 @@ export default defineComponent({
         console.log(this.permissions)
       } catch (error) {
         console.log(error)
+      } finally {
+        this.isLoading = false
       }
     },
 
@@ -284,6 +302,9 @@ export default defineComponent({
     //   this.changes = [];
     // },
     async saveChanges(): Promise<void> {
+
+      this.isLoading = true
+
     // Prepare the changes array
     const changes = this.changes.map(change => {
       const { resource, scope: action, role, type } = change;
@@ -297,14 +318,14 @@ export default defineComponent({
     // Send a single request with the changes array
     try{
       await axios.post(url + '/all', { permissions: changes }, config);
+      console.log('permissions edited successfully')
+      this.fetchPermissions();
     } catch (error) {
       console.log(error)
+    } finally {
+      this.isLoading = false
+      this.changes = [];
     }
-    // refresh the permissions object
-    console.log('permissions edited successfully')
-    this.fetchPermissions();
-    // Clear the changes array
-    this.changes = [];
 
   },
 
@@ -530,6 +551,19 @@ input{
     border-radius: 0.5em;
     border: 1px solid #f2f2f2;
     width: 30%;
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 /* tr td:nth-child(2) {

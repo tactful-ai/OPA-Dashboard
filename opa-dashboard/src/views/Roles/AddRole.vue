@@ -1,5 +1,14 @@
 <template>
     <div class="backdrop" @click.self="closeModal">
+
+        <div class="spinner-container" v-show='isLoading'>
+            <fulfilling-bouncing-circle-spinner
+            :animation-duration="2000"
+            :size="60"
+            color="#0B3954"
+            />
+        </div>
+
         <div class="modal">
             <h1 v-if="mode === 'add'">Add a New Role</h1>
             <h1 v-else-if="mode === 'edit'">Edit Role</h1>
@@ -23,6 +32,7 @@
 
 <script>
 import axios from 'axios'
+import { FulfillingBouncingCircleSpinner } from 'epic-spinners'
 
 const url = process.env.VUE_APP_BASE_URL + 'roles'
 const config = {
@@ -36,6 +46,10 @@ export default {
     
     props: ['selected_role_name', 'selected_role_description', 'mode'],
 
+    components: {
+        FulfillingBouncingCircleSpinner
+    },
+
     data(){
         return{
             /**
@@ -47,7 +61,8 @@ export default {
              * @property {String} role_description - The description of the role to be added data-bound to the input field
              * @default ''
              */
-            role_description: ''
+            role_description: '',
+            isLoading: false
         }
     },
     // computed: {
@@ -89,6 +104,7 @@ export default {
          * Emits an add event to the parent component to add the new role to the list of roles
          */
         async handleAdd(){
+            this.isLoading = true
             try{
                 console.log('adding a new role...')
                 const data = {
@@ -105,9 +121,12 @@ export default {
             } catch (err){
                 console.log(err)
                 this.$emit('add')
+            } finally {
+                this.isLoading = false
             }
         },
         async handleDelete(){
+            this.isLoading = true
             try{
                 console.log('deleting a role...')
                 const data = {
@@ -122,10 +141,13 @@ export default {
             } catch (err){
                 console.log(err)
                 this.$emit('add')
+            } finally {
+                this.isLoading = false
             }
         },
 
         async handleEdit(){
+            this.isLoading = true
             try{
                 console.log('editing a role...')
                 const data = {
@@ -141,6 +163,8 @@ export default {
             } catch (err){
                 console.log(err)
                 this.$emit('add')
+            } finally {
+                this.isLoading = false
             }
         }
     },
@@ -234,5 +258,21 @@ export default {
       background-color: white;
       border: 1px solid #519E8A;
   }
+
+  
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+
 
 </style>

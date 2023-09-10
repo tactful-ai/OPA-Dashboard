@@ -6,6 +6,8 @@
         v-if="showModal" 
         @close="toggleModal" 
         @update="fetchResources" 
+        @loadingOn="isLoading = true"
+        @loadingOff="isLoading = false"
         mode="add"/>
     </transition>
     <div class="resources">

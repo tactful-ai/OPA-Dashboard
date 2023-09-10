@@ -1,5 +1,14 @@
 <template>
   <div class="backdrop" @click.self="closeModal">
+
+    <div class="spinner-container" v-if='isLoading'>
+        <fulfilling-bouncing-circle-spinner
+        :animation-duration="2000"
+        :size="60"
+        color="#0B3954"
+        />
+    </div>
+
         <div class="modal">
             <h1 v-if="mode === 'add'" class="modal-header">Add a New Resource</h1>
             <h1 v-else-if="mode === 'edit'" class="modal-header">Edit Resource</h1>
@@ -46,6 +55,7 @@
 
 <script>
 import axios from 'axios'
+import { FulfillingBouncingCircleSpinner } from 'epic-spinners'
 
 const resources_url = process.env.VUE_APP_BASE_URL + 'resources'
 const scopes_url = process.env.VUE_APP_BASE_URL + 'scopes'
@@ -60,6 +70,10 @@ export default {
 
     props: ['selected_resource_name', 'selected_resource_scopes', 'mode'],
 
+    components: {
+        FulfillingBouncingCircleSpinner
+    },
+
     data(){
         return{
             resource_name: '',
@@ -67,6 +81,7 @@ export default {
             tempScope: '',
             originalResourceName: '',
             scopesChanged: false,
+            isLoading: false,
         }
     },
 
@@ -96,6 +111,7 @@ export default {
             this.scopesChanged = true
         },
         async submitResource(){
+            this.isLoading = true
             try{
                 console.log('adding resource...')
                 const data = {
@@ -108,9 +124,13 @@ export default {
                 this.closeModal()
             } catch(err){
                 console.log(err)
+            } finally{
+                this.isLoading = false
             }
         },
         async deleteResource(){
+            // this.$emit('loadingOn')
+            this.isLoading = true
             try{
                 console.log('deleting resource...')
                 const data = {
@@ -125,10 +145,13 @@ export default {
                 // this.closeModal()
             } catch(err){
                 console.log(err)
+            } finally{
+                this.isLoading = false
             }
         },
 
         async submitScope(){
+            this.isLoading = true
             try{
                 console.log('adding scope...')
                 const data = {
@@ -143,9 +166,12 @@ export default {
                 this.closeModal()
             } catch(err){
                 console.log(err)
+            } finally{
+                this.isLoading = false
             }
         },
         async deleteScope(){
+            this.isLoading = true
             try{
                 console.log('deleting scope...')
                 const data = {
@@ -159,9 +185,12 @@ export default {
                 this.closeModal()
             } catch(err){
                 console.log(err)
+            } finally{
+                this.isLoading = false
             }
         },
         async editResourceAndScopes(){
+            this.isLoading = true
             try{
                 console.log('editing scope...')
                 let data = null
@@ -180,12 +209,14 @@ export default {
                     }
                 }
                 console.log(data)
-                const res = await axios.post(scopes_url, data, config)
+                const res = await axios.post(resources_url, data, config)
                 console.log(res)
                 this.$emit('update')
                 this.closeModal()
             } catch(err){
                 console.log(err)
+            } finally{
+                this.isLoading = false
             }
         },
     },
@@ -314,6 +345,16 @@ form button:hover{
     margin: 0 0.5em;
 }
 
-
-
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
 </style>
