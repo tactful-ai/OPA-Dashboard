@@ -14,7 +14,7 @@
             <span> Resources </span>
         </div>
         <div class="top-container">
-            <input type="text" placeholder="Search for a Resource">
+            <input type="text" placeholder="Search for a Resource" v-model="searchTerm">
             <button @click.exact="toggleModal" class='add-resource'>Add +</button>
         </div>
         <div class="table-container" v-if="Object.keys(resources).length">
@@ -25,7 +25,7 @@
                         <th>Scopes</th>
                     </tr>
                 </thead>
-                <tbody v-for="(values, key) in resources" :key="key">
+                <tbody v-for="(values, key) in filteredResources" :key="key">
                     <ResourceModal 
                     v-if="selectedResource === key" 
                     @close="selectedResource = null" 
@@ -83,9 +83,27 @@ export default defineComponent({
         return{
             resources: {} as Resource,
             showModal: false,
-            selectedResource: null
+            selectedResource: null,
+            searchTerm: ''
         }
     },
+
+    computed: {
+        filteredResources(): Resource {
+            if (this.searchTerm === '') {
+                return this.resources;
+            } else {
+                let filtered = {} as Resource;
+                for (let key in this.resources) {
+                    if (key.toLowerCase().includes(this.searchTerm.toLowerCase())) {
+                        filtered[key] = this.resources[key];
+                    }
+                }
+                return filtered;
+            }
+        }
+    },
+
 
     methods:{
         toggleModal(){

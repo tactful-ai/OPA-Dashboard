@@ -5,7 +5,9 @@
       <span> Permissions </span>
     </div>
 
-    <div class="top-container"></div>
+    <div class="top-container">
+        <input type="text" placeholder="Search for a Permission" v-model="searchTerm">
+    </div>
 
     <div class="table-container" v-if="Object.keys(permissions).length">
       <table>
@@ -17,7 +19,7 @@
         </thead>
         <tbody>
           <!-- <template v-for="(actions, resource) in permissions" :key="resource"> -->
-          <template v-for="(actions, resource) in resources" :key="resource">
+          <template v-for="(actions, resource) in filteredResources" :key="resource">
             <tr class="resource-row">
               <td>{{ resource }}</td>
               <td v-for="role in allRoles" :key="role + resource"></td>
@@ -91,6 +93,8 @@ export default defineComponent({
 
       changes: [] as Change[],
 
+      searchTerm: '',
+
       roles: [] as Role[],
       resources: {} as Resource,
 
@@ -98,6 +102,20 @@ export default defineComponent({
   },
 
   computed: {
+    filteredResources(): Record<string, string[]> {
+      if (!this.searchTerm) {
+        return this.resources;
+      }
+      const search = this.searchTerm.toLowerCase();
+      const filteredResources: Record<string, string[]> = {};
+      for (const [resource, actions] of Object.entries(this.resources)) {
+        if (resource.toLowerCase().includes(search)) {
+          filteredResources[resource] = actions;
+        }
+      }
+      return filteredResources;
+    },
+
     allRoles(): string[] {
       // Compute the list of all roles
       // const roles = new Set<string>();
@@ -240,31 +258,55 @@ export default defineComponent({
     //     }
     //   }
     // },
+    // async saveChanges(): Promise<void> {
+    //   try{
+    //     for (const change of this.changes) {
+    //       const { resource, scope: action, role, type } = change;
+    //       if (type === "add") {
+    //         // Send a request to add the permission
+    //         await axios.post(url, { resource, scope: action, role }, config);
+    //       } else if (type === "delete") {
+    //         // Send a request to delete the permission
+    //         await axios.delete(url, {
+    //           data: { resource, scope: action, role },
+    //           headers: config.headers,
+    //         });
+    //       }
+    //     }
+    //   } catch (error) {
+    //     console.log(error)
+    //   }
+    //   // refresh the permissions object after 5 seconds
+    //   setTimeout(() => {
+    //     this.fetchPermissions();
+    //   }, 5000);
+    //   // Clear the changes array
+    //   this.changes = [];
+    // },
     async saveChanges(): Promise<void> {
-      try{
-        for (const change of this.changes) {
-          const { resource, scope: action, role, type } = change;
-          if (type === "add") {
-            // Send a request to add the permission
-            await axios.post(url, { resource, scope: action, role }, config);
-          } else if (type === "delete") {
-            // Send a request to delete the permission
-            await axios.delete(url, {
-              data: { resource, scope: action, role },
-              headers: config.headers,
-            });
-          }
-        }
-      } catch (error) {
-        console.log(error)
-      }
-      // refresh the permissions object after 5 seconds
-      setTimeout(() => {
-        this.fetchPermissions();
-      }, 5000);
-      // Clear the changes array
-      this.changes = [];
-    },
+    // Prepare the changes array
+    const changes = this.changes.map(change => {
+      const { resource, scope: action, role, type } = change;
+      return { resource, scope: action, role, type: type === 'delete' ? 'remove' : type };
+    });
+
+    console.log(changes)
+
+    console.log('editing permissions...')
+
+    // Send a single request with the changes array
+    try{
+      await axios.post(url + '/all', { permissions: changes }, config);
+    } catch (error) {
+      console.log(error)
+    }
+    // refresh the permissions object
+    console.log('permissions edited successfully')
+    this.fetchPermissions();
+    // Clear the changes array
+    this.changes = [];
+
+  },
 
     // resetChanges(): void {
     //   // Reset the changes by restoring the original state of the permissions object
@@ -381,17 +423,21 @@ export default defineComponent({
 }
 
 .table-container {
+  overflow-x: scroll;
   overflow-y: scroll;
-  height: 75%;
+  height: fit-content;
+  width: fit-content;
+  max-height: 75vh;
+  max-width: 90%;
 }
 
 table {
   text-align: left;
-  overflow: hidden;
   box-shadow: 0 5px 10px #e1e5ee;
   border-radius: 3px;
   border: 1px solid #f2f2f2;
-  overflow-y: scroll;
+  /* overflow-y: scroll;
+  overflow-x: scroll; */
   border-collapse: collapse;
 }
 
@@ -470,6 +516,20 @@ input[type="checkbox"] {
   text-align: center;
   background: #dbf9b8;
   z-index: 2;
+}
+
+.top-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2em;
+}
+
+input{
+    padding: 1em;
+    border-radius: 0.5em;
+    border: 1px solid #f2f2f2;
+    width: 30%;
 }
 
 /* tr td:nth-child(2) {

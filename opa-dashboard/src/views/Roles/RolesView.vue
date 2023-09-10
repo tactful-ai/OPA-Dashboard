@@ -10,7 +10,7 @@
             <span> Roles </span>
         </div>
         <div class="btns-container">
-            <input type="text" placeholder="Search for a Role">
+            <input type="text" placeholder="Search for a Role" v-model="searchTerm">
             <button @click.exact="toggleModal" class='add-role'>Add +</button>
         </div>
         <div class="table-container" v-if="roles.length">
@@ -21,7 +21,7 @@
                         <th>Description</th>
                     </tr>
                 </thead>
-                <tbody v-for="role in roles" :key='role.id'>
+                <tbody v-for="role in filteredRoles" :key='role.id'>
                     <AddRole v-show="selectedRole === role" 
                     @close="selectedRole = null" 
                     @add="displayRoles" 
@@ -65,7 +65,17 @@ export default defineComponent({
         return {
             roles: [] as Role[],
             showModal: false,
-            selectedRole: null
+            selectedRole: null,
+            searchTerm:'',
+        }
+    },
+
+    computed: {
+        filteredRoles(): Role[]{
+            if (this.searchTerm === '') return this.roles
+            return this.roles.filter((role: Role) => {
+                return role.role.toLowerCase().includes(this.searchTerm.toLowerCase())
+            })
         }
     },
 

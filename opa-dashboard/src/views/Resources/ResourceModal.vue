@@ -104,13 +104,8 @@ export default {
                 }
                 console.log(data)
                 const res = await axios.post(resources_url, data, config)
-                console.log(res)
-                // timeout for 2 seconds to allow the server to update
-                setTimeout(() => {
-                    this.$emit('update')
-                    this.closeModal()
-                }, 5000);
                 this.$emit('update')
+                this.closeModal()
             } catch(err){
                 console.log(err)
             }
@@ -124,10 +119,8 @@ export default {
                 console.log(data)
                 const res = await axios.delete(resources_url, {data: data, headers: config.headers})
                 console.log(res)
-                setTimeout(() => {
-                    this.$emit('update')
-                    this.closeModal()
-                }, 5000);
+                this.$emit('update')
+                this.closeModal()
                 // this.$emit('update')
                 // this.closeModal()
             } catch(err){
