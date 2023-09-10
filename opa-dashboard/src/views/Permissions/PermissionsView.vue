@@ -16,14 +16,16 @@
           </tr>
         </thead>
         <tbody>
-          <template v-for="(actions, resource) in permissions" :key="resource">
+          <!-- <template v-for="(actions, resource) in permissions" :key="resource"> -->
+          <template v-for="(actions, resource) in resources" :key="resource">
             <tr class="resource-row">
               <td>{{ resource }}</td>
               <td v-for="role in allRoles" :key="role + resource"></td>
             </tr>
-            <tr v-for="(roles, action) in actions" :key="action">
+            <!-- <tr v-for="(roles, action) in actions" :key="action"> -->
+            <tr v-for="action in actions" :key="action">
               <td>{{ action }}</td>
-              <td v-for="role in allRoles" :key="role + action">
+              <td v-for="role in allRoles" :key="role + action" class="checkbox-td">
                 <input
                   type="checkbox"
                   :checked="hasPermission(resource, action, role)"
@@ -66,6 +68,15 @@ const config = {
     }
 }
 
+interface Role {
+  role: string;
+  description: string;
+}
+
+interface Resource {
+  [key: string]: string[];
+}
+
 export default defineComponent({
   name: "PermissionsView",
 
@@ -79,41 +90,50 @@ export default defineComponent({
       permissions: {} as Record<string, Permissions>,
 
       changes: [] as Change[],
+
+      roles: [] as Role[],
+      resources: {} as Resource,
+
     };
   },
 
   computed: {
     allRoles(): string[] {
       // Compute the list of all roles
-      const roles = new Set<string>();
-      if (Object.keys(this.permissions).length) {
-        for (const actions of Object.values(this.permissions)) {
-          for (const roleArray of Object.values(actions)) {
-            for (const role of roleArray) {
-              roles.add(role);
-            }
-          }
-        }
-      }
-      console.log(Array.from(roles))
-      return Array.from(roles);
+      // const roles = new Set<string>();
+      // if (Object.keys(this.permissions).length) {
+      //   for (const actions of Object.values(this.permissions)) {
+      //     for (const roleArray of Object.values(actions)) {
+      //       for (const role of roleArray) {
+      //         roles.add(role);
+      //       }
+      //     }
+      //   }
+      // }
+      // console.log(Array.from(roles))
+      // return Array.from(roles);
+      console.log(this.roles)
+      return this.roles.map((role) => role.role);
     },
 
     permissionMatrix(): Record<
-      string,
-      Record<string, Record<string, boolean>>
-    > {
+    string,
+    Record<string, Record<string, boolean>>
+  > {
       // Transform the permissions object into a multidimensional array of booleans
       const matrix: Record<
         string,
         Record<string, Record<string, boolean>>
       > = {};
-      for (const [resource, actions] of Object.entries(this.permissions)) {
+      for (const [resource, actions] of Object.entries(this.resources)) {
         matrix[resource] = {};
-        for (const [action, roles] of Object.entries(actions)) {
+        for (const action of actions) {
           matrix[resource][action] = {};
           for (const role of this.allRoles) {
-            matrix[resource][action][role] = roles.includes(role);
+            matrix[resource][action][role] =
+              this.permissions[resource] &&
+              this.permissions[resource][action] &&
+              this.permissions[resource][action].includes(role);
           }
         }
       }
@@ -143,21 +163,23 @@ export default defineComponent({
     },
 
     togglePermission(resource: string, action: string, role: string): void {
+      // Check if the resource and action exist in the permissions object
+      if (!this.permissions[resource]) {
+        this.permissions[resource] = {};
+      }
+      if (!this.permissions[resource][action]) {
+        this.permissions[resource][action] = [];
+      }
       // Update the permissionMatrix computed property when a checkbox is toggled
       if (this.hasPermission(resource, action, role)) {
         // Remove permission
         this.permissions[resource][action] = this.permissions[resource][action].filter((r) => r !== role);
-        // this.changes.push({resource, scope: action, role, type: 'delete'});
-        this.pushToChanges({resource, scope: action, role, type: 'delete'});
+        this.pushToChanges({ resource, scope: action, role, type: "delete" });
       } else {
         // Add permission
         this.permissions[resource][action].push(role);
-        // this.changes.push({resource, scope: action, role, type: 'add'});
-        this.pushToChanges({resource, scope: action, role, type: 'add'});
+        this.pushToChanges({ resource, scope: action, role, type: "add" });
       }
-      // this.cleanPermissions()
-      // console.log(this.permissionMatrix);
-      console.log(this.changes)
     },
 
     cleanPermissions(): void {
@@ -173,6 +195,7 @@ export default defineComponent({
     async fetchPermissions(): Promise<void> {
       // Fetch the permissions from the API and update the permissions object
       try{
+        console.log('fetching permissions...')
         const { data } = await axios.get(url, config);
         this.permissions = data.permissions;
         console.log(this.permissions)
@@ -218,17 +241,27 @@ export default defineComponent({
     //   }
     // },
     async saveChanges(): Promise<void> {
-      for (const change of this.changes) {
-        const { resource, scope:action, role, type } = change;
-        console.log({ resource, scope:action, role  })
-        if (type === 'add') {
-          // Send a request to add the permission
-          await axios.post(url, { resource, scope:action, role }, config);
-        } else if (type === 'delete') {
-          // Send a request to delete the permission
-          await axios.delete(url, { data: { resource, scope:action, role }, headers: config.headers });
+      try{
+        for (const change of this.changes) {
+          const { resource, scope: action, role, type } = change;
+          if (type === "add") {
+            // Send a request to add the permission
+            await axios.post(url, { resource, scope: action, role }, config);
+          } else if (type === "delete") {
+            // Send a request to delete the permission
+            await axios.delete(url, {
+              data: { resource, scope: action, role },
+              headers: config.headers,
+            });
+          }
         }
+      } catch (error) {
+        console.log(error)
       }
+      // refresh the permissions object after 5 seconds
+      setTimeout(() => {
+        this.fetchPermissions();
+      }, 5000);
       // Clear the changes array
       this.changes = [];
     },
@@ -260,11 +293,11 @@ export default defineComponent({
     resetChanges(): void {
       // Reset the changes by restoring the original state of the permissions object
       for (const change of this.changes) {
-        const { resource, scope:action, role, type } = change;
-        if (type === 'add') {
+        const { resource, scope: action, role, type } = change;
+        if (type === "add") {
           // Restore deleted permission
           this.permissions[resource][action] = this.permissions[resource][action].filter((r) => r !== role);
-        } else if (type === 'delete') {
+        } else if (type === "delete") {
           // Restore added permission
           this.permissions[resource][action].push(role);
         }
@@ -273,6 +306,32 @@ export default defineComponent({
       this.changes = [];
     },
 
+
+    async fetchRoles(){
+            console.log('displaying roles...')
+            try {
+            const url: string = process.env.VUE_APP_BASE_URL + 'roles'
+            const config = {
+                headers: {
+                    "ngrok-skip-browser-warning": "true",
+                }
+            }
+            const response = await axios.get(url, config);
+            this.roles = response.data.roles;
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        async fetchResources(){
+            console.log('displaying resources...')
+            try{
+                const url: string = process.env.VUE_APP_BASE_URL + 'resources'
+                const response = await axios.get(url, config)
+                this.resources = response.data.resources
+            } catch (error){
+                console.log(error)
+            }
+        }
   },
   mounted(){
     this.fetchPermissions()
@@ -282,6 +341,8 @@ export default defineComponent({
     //     document: {order: ["user"], read: ["user", "guest"], review: ["user"],},
     //     email: { read: ["user", "guest"], send: ["user"] },
     //   }
+    this.fetchRoles()
+    this.fetchResources()
   }
 });
 </script>
@@ -354,15 +415,20 @@ td {
   font-size: 1rem;
 }
 
-tbody tr {
-  transition: transform 0.2s;
+/* tbody td { */
+.checkbox-td {
+  transition: transform 0.1s;
+  /* center the content in td */
+  text-align: center;
 }
 
-tbody tr:hover {
+/* tbody td:hover { */
+.checkbox-td:hover {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-  transform: translateY(-5px);
+  transform: translateY(-2px);
   /* cursor: pointer; */
   z-index: 1;
+  background-color: #CAE2BC;
 }
 
 .action-btns{
