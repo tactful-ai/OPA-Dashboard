@@ -14,7 +14,11 @@
     </div>
 
     <div class="top-container">
-        <input type="text" placeholder="Search for a Permission" v-model="searchTerm">
+      <input type="text" placeholder="Search for a Permission" v-model="searchTerm">
+      <div class="action-btns">
+        <button class="reset" @click="resetChanges">Reset Changes</button>
+        <button class="submit" @click="saveChanges">Save Changes</button>
+      </div>
     </div>
 
     <div class="table-container" v-if="Object.keys(permissions).length">
@@ -28,12 +32,15 @@
         <tbody>
           <!-- <template v-for="(actions, resource) in permissions" :key="resource"> -->
           <template v-for="(actions, resource) in filteredResources" :key="resource">
-            <tr class="resource-row">
-              <td>{{ resource }}</td>
+            <tr class="resource-row" @click="toggleScopes(resource)">
+              <td>
+                <span class="arrow" :class="{ 'arrow-down': showScopes[resource] }"></span>
+                {{ resource }}
+              </td>
               <td v-for="role in allRoles" :key="role + resource"></td>
             </tr>
             <!-- <tr v-for="(roles, action) in actions" :key="action"> -->
-            <tr v-for="action in actions" :key="action">
+            <tr v-for="action in actions" :key="action" v-show="showScopes[resource]">
               <td>{{ action }}</td>
               <td v-for="role in allRoles" :key="role + action" class="checkbox-td">
                 <input
@@ -46,11 +53,6 @@
           </template>
         </tbody>
       </table>
-    </div>
-
-    <div class="action-btns">
-      <button class="reset" @click="resetChanges">Reset Changes</button>
-      <button class="submit" @click="saveChanges">Save Changes</button>
     </div>
 
   </div>
@@ -105,6 +107,8 @@ export default defineComponent({
       searchTerm: '',
 
       isLoading: false,
+
+      showScopes: {} as Record<string, boolean>,
 
       roles: [] as Role[],
       resources: {} as Resource,
@@ -174,6 +178,10 @@ export default defineComponent({
     },
   },
   methods: {
+    toggleScopes(resource: string): void {
+      this.showScopes[resource] = !this.showScopes[resource];
+    },
+
     hasPermission(resource: string, action: string, role: string): boolean {
       // Check if a permission exists using the permissionMatrix computed property
       return this.permissionMatrix[resource][action][role];
@@ -419,8 +427,8 @@ export default defineComponent({
 .permissions {
   top: 0;
   padding: 3em;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   font-size: 62.5%;
 }
 
@@ -499,7 +507,7 @@ td {
 }
 
 .action-btns{
-  margin: 2em auto;
+  margin: 2em 0;
 }
 
 .action-btns button {
@@ -537,6 +545,7 @@ input[type="checkbox"] {
   text-align: center;
   background: #dbf9b8;
   z-index: 2;
+  cursor: pointer;
 }
 
 .top-container{
@@ -565,6 +574,22 @@ input{
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
 }
+
+.arrow {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 5px solid black;
+  margin-right: 5px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.arrow-down {
+  transform: rotate(90deg);
+}
+
 
 /* tr td:nth-child(2) {
   width: 100%;

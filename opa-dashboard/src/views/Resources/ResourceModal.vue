@@ -209,7 +209,7 @@ export default {
                     }
                 }
                 console.log(data)
-                const res = await axios.post(resources_url, data, config)
+                const res = await axios.put(resources_url, data, config)
                 console.log(res)
                 this.$emit('update')
                 this.closeModal()
