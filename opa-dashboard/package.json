@@ -10,11 +10,15 @@
     "styleguide:build": "vue-cli-service styleguidist:build"
   },
   "dependencies": {
+    "@grapoza/vue-tree": "^5.2.0",
     "axios": "^1.4.0",
     "core-js": "^3.8.3",
     "epic-spinners": "^2.0.0",
+    "simple-code-editor": "^2.0.8",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
+    "vue3-treeview": "^0.4.1",
+    "vuejs-tree": "^3.0.2",
     "vuex": "^4.0.0"
   },
   "devDependencies": {

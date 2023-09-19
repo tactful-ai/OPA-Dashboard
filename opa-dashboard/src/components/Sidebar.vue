@@ -26,6 +26,12 @@
                         <span> Permissions </span>
                     </router-link> 
                 </li>
+                <li>
+                    <router-link to="/editor" class='menu-item'>
+                        <img src="./../assets/editor.svg" alt="">
+                        <span> Code Editor </span>
+                    </router-link> 
+                </li>
             </ul>
     </nav>
 </template>

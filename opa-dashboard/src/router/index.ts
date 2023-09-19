@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import RolesView from '../views/Roles/RolesView.vue'
 import ResourcesView from '../views/Resources/ResourcesView.vue'
 import PermissionsView from '../views/Permissions/PermissionsView.vue'
+import EditorView from '../views/Editor/EditorView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -28,6 +29,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/permissions',
     name: 'permissions',
     component: PermissionsView
+  },
+  {
+    path: '/editor',
+    name: 'editor',
+    component: EditorView
   }
 ]
 

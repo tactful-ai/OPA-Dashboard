@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <Sidebar/>
+    <Sidebar v-if="showSidebar"/>
     <router-view/>
   </div>
 </template>
@@ -9,9 +9,22 @@
   import Sidebar from './components/Sidebar.vue';
   export default {
     name: 'App',
+
     components: {
       Sidebar,
     },
+
+    data(){
+      return{
+        showSidebar: true,
+      }
+    },
+
+    watch: {
+      '$route'(to, from) {
+        this.showSidebar = to.name !== 'editor';
+      }
+    }
   };
 </script>
 
