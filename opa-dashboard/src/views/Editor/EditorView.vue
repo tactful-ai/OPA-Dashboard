@@ -12,7 +12,15 @@
       </span>
     </template>
     </tree>
-    <div class="editor-to-be"></div>
+    <CodeEditor
+      class="editor-to-be"
+      v-model="code"
+      :tab-spaces="2"
+      padding="10px"
+      :line-nums="true"
+      :display-language="false"
+      :languages="[['cpp', 'C++']]"
+    />
   </div>
 </template>
 
@@ -22,12 +30,15 @@ import axios from "axios";
 import treeview from "vue3-treeview";
 // const treeview = require("vue3-treeview");
 import "vue3-treeview/dist/style.css";
+import hljs from 'highlight.js';
+import CodeEditor from "simple-code-editor";
 
 
 export default defineComponent({
   name: "EditorView",
   components: {
     tree: treeview,
+    CodeEditor
   },
 
   data() {
@@ -55,6 +66,7 @@ export default defineComponent({
           text: "text2",
         },
       },
+      code: "const a = 1",
     }
   },
 
@@ -83,6 +95,7 @@ export default defineComponent({
 .editor-view {
   display: flex;
   height: 100vh;
+  width: 100vw;
 }
 
 .directory {
