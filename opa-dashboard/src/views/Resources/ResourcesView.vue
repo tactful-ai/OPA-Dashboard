@@ -6,8 +6,6 @@
         v-if="showModal" 
         @close="toggleModal" 
         @update="fetchResources" 
-        @loadingOn="isLoading = true"
-        @loadingOff="isLoading = false"
         mode="add"/>
     </transition>
     <div class="resources">
@@ -35,7 +33,7 @@
                     :selected_resource_name="key"
                     :selected_resource_scopes="values"
                     mode="edit"/>
-                    <tr @click= "selectedResource = key">
+                    <tr @click= "selectedResource = String(key)">
                         <td>{{ key }}</td>
                         <td>
                             <span class="pill" v-for="scope in values" :key='scope'>
@@ -85,7 +83,7 @@ export default defineComponent({
         return{
             resources: {} as Resource,
             showModal: false,
-            selectedResource: null,
+            selectedResource: null as string | null,
             searchTerm: ''
         }
     },
@@ -185,18 +183,18 @@ input{
 .add-resource{
     padding: 1em 2em;
     border-radius: 0.5em;
-    border: 1px solid #f2f2f2;
-    background-color: black;
-    color: white;
+    border: 1px solid #4361EE;
+    background-color: white;
+    color: #4361EE;
     font-weight: bold;
     cursor: pointer;
     /*  add a transition to make the border black */
-    transition: background-color 0.2s;
+    transition: background-color 0.2s ease 0s, color 0.2s ease 0s;
 }
 
 .add-resource:hover{
-    background-color: #CDE77F;
-    color: black
+    background-color: #4361EE;
+    color: white;
 }
 
 .table-container{

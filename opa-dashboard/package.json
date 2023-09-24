@@ -10,12 +10,17 @@
     "styleguide:build": "vue-cli-service styleguidist:build"
   },
   "dependencies": {
+    "@codemirror/lang-javascript": "^6.2.1",
+    "@codemirror/theme-one-dark": "^6.1.2",
     "@grapoza/vue-tree": "^5.2.0",
+    "@kyvg/vue3-notification": "^3.0.2",
     "axios": "^1.4.0",
+    "codemirror": "^6.0.1",
     "core-js": "^3.8.3",
     "epic-spinners": "^2.0.0",
     "simple-code-editor": "^2.0.8",
     "vue": "^3.2.13",
+    "vue-codemirror": "^6.1.1",
     "vue-router": "^4.0.3",
     "vue3-treeview": "^0.4.1",
     "vuejs-tree": "^3.0.2",

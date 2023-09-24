@@ -295,7 +295,8 @@ form button{
     padding: 1em;
     border-radius: 5px;
     border: none;
-    background-color: #CAE2BC;
+    background-color: #4361EE;
+    color: white;
     font-weight: bold;
     font-size: 1rem;
     cursor: pointer;
@@ -303,7 +304,7 @@ form button{
 }
 
 form button:hover{
-    background-color: #DBF9B8;
+    filter: brightness(1.3);
 }
 
 .scopes-container .pill{

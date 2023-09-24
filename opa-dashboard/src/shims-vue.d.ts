@@ -8,3 +8,7 @@ declare module '*.vue' {
 declare module 'simple-code-editor';
 
 declare module 'vue3-treeview';
+
+declare module '@codemirror/theme-one-dark'
+
+declare module '@codemirror/lang-javascript'

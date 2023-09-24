@@ -421,15 +421,15 @@ export default defineComponent({
 
 <style scoped>
 * {
-  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 .permissions {
   top: 0;
   padding: 3em;
-  width: 100%;
-  height: 100%;
   font-size: 62.5%;
+  width: 100vw;
 }
 
 .page-heading {
@@ -454,9 +454,9 @@ export default defineComponent({
 .table-container {
   overflow-x: scroll;
   overflow-y: scroll;
-  height: fit-content;
-  width: fit-content;
-  max-height: 75vh;
+  /* height: fit-content;
+  width: fit-content; */
+  max-height: 75%;
   max-width: 90%;
 }
 
@@ -513,21 +513,34 @@ td {
 .action-btns button {
   padding: 1em 2em;
   border-radius: 0.5em;
-  color: black;
   font-weight: bold;
   cursor: pointer;
   margin: 0 1em;
 }
 
 .submit {
-  background-color: #DBF9B8;
-  border: 2px solid #DBF9B8;
+  background-color: #4361EE;
+  border-color: transparent;
+  color: white;
+  transition: border 0.2s ease-in-out 0s, background-color 0.2s ease-in-out 0s;
+}
 
+.submit:hover{
+  border: 2px solid white;
+  /* make the background color brighter using filter*/
+  filter: brightness(1.1);
 }
 
 .reset {
   background-color: white;
-  border: 2px solid #DBF9B8;
+  color: #4361EE;
+  border: 2px solid #4361EE;
+  transition: background-color 0.2s ease 0s, color 0.2s ease 0s;
+}
+
+.reset:hover{
+  background-color: #4361EE;
+  color: white;
 }
 
 /* select inputs of tyoe checkbox */
@@ -553,6 +566,7 @@ input[type="checkbox"] {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2em;
+    width: 100%;
 }
 
 input{

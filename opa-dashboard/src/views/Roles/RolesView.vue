@@ -30,7 +30,7 @@
                         <th>Description</th>
                     </tr>
                 </thead>
-                <tbody v-for="role in filteredRoles" :key='role.id'>
+                <tbody v-for="role in filteredRoles" :key='role.role'>
                     <AddRole v-show="selectedRole === role" 
                     @close="selectedRole = null" 
                     @add="displayRoles" 
@@ -76,7 +76,7 @@ export default defineComponent({
         return {
             roles: [] as Role[],
             showModal: false,
-            selectedRole: null,
+            selectedRole: null as Role | null,
             searchTerm:'',
             isLoading: true,
         }
@@ -231,17 +231,18 @@ input{
 .add-role{
     padding: 1em 2em;
     border-radius: 0.5em;
-    border: 1px solid #f2f2f2;
-    background-color: #519E8A;
-    color: black;
+    border: 1px solid #4361EE;
+    background-color: white;
+    color: #4361EE;
     font-weight: bold;
     cursor: pointer;
     /*  add a transition to make the border black */
-    transition: border-color 0.2s;
+    transition: background-color 0.2s ease 0s, color 0.2s ease 0s;
 }
 
 .add-role:hover{
-    border-color: black;
+    background-color: #4361EE;
+    color: white;
 }
 
 .page-heading{

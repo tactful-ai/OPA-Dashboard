@@ -116,8 +116,13 @@ export default {
                 console.log(data)
                 const response = await axios.post(url, data, config)
                 console.log(response)
-                this.closeModal()
+                this.$notify({
+                    title: 'Success',
+                    text: 'Role added successfully',
+                    type: 'success'
+                });
                 this.$emit('add')
+                this.closeModal()
             } catch (err){
                 console.log(err)
                 this.$emit('add')
@@ -136,6 +141,11 @@ export default {
                 console.log(data)
                 const response = await axios.delete(url, {data: data, headers: config.headers})
                 console.log(response)
+                this.$notify({
+                    title: 'Success',
+                    text: 'Role deleted successfully',
+                    type: 'success'
+                });
                 this.$emit('add')
                 this.closeModal()
             } catch (err){
@@ -169,10 +179,8 @@ export default {
         }
     },
     mounted() {
-        if (this.selected_role_name && this.selected_role_description){
-            this.role_name = this.selected_role_name
-            this.role_description = this.selected_role_description
-        }
+        this.role_name = this.selected_role_name
+        this.role_description = this.selected_role_description
     }
 }
 </script>
@@ -248,16 +256,28 @@ export default {
       margin: 1em;
       border-radius: 5px;
       border: none;
-      background-color: #519E8A;
+      color: white;
+      background-color: #4361EE;
       font-weight: bold;
       font-size: 1rem;
       cursor: pointer;
   }
+  
+  button:hover{
+    filter: brightness(1.3);
+  }
 
   .close{
+    color: #4361EE;
       background-color: white;
-      border: 1px solid #519E8A;
+      border: 1px solid #4361EE;
   }
+
+    .close:hover{
+        background-color: #4361EE;
+        color: white;
+    }
+
 
   
 .spinner-container {

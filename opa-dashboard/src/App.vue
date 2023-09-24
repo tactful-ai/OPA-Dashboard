@@ -1,4 +1,5 @@
 <template>
+  <notifications />
   <div class="wrapper">
     <Sidebar v-if="showSidebar"/>
     <router-view/>
