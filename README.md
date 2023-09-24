@@ -13,6 +13,20 @@ You will need to have Node installed to run this project.
 3. Run the application
 ` npm run serve `
 
+# Built With
+
+<div align="center">
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Vue.js_Logo_2.svg" alt="Vue" style="height: 60px">
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg" alt="TypeScript" style="height: 60px">
+
+<img src="https://upload.wikimedia.org/wikipedia/en/f/f4/Docker_logo.svg" alt="Docker" style="height: 60px">
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/3/33/Figma-logo.svg" alt="Figma" style="height: 60px">
+
+</div>
+
 ## Project Walkthrough
 
 Types of authorization policies include:
@@ -30,4 +44,6 @@ The dashboard offers GUI support to configure RBAC policies in realtime
 as well as a code editor to configure any other types of policies
 
 ![4](https://github.com/tactful-ai/OPA-Dashboard/assets/65499354/eeb3f7da-436e-4d78-a714-2b747a47cdc2)
+
+Checkout the UI design on Figma [here](https://www.figma.com/file/xWXPTFcimavtrVtYV1dLF5/OPA-Dashboard?type=design&node-id=8-540&mode=design&t=GOkYiRAAgWVTQvOR-0)
 
