@@ -45,5 +45,5 @@ as well as a code editor to configure any other types of policies
 
 ![4](https://github.com/tactful-ai/OPA-Dashboard/assets/65499354/eeb3f7da-436e-4d78-a714-2b747a47cdc2)
 
-Checkout the UI design on Figma [here](https://www.figma.com/file/xWXPTFcimavtrVtYV1dLF5/OPA-Dashboard?type=design&node-id=8-540&mode=design&t=GOkYiRAAgWVTQvOR-0)
+Check out the UI design on Figma [here](https://www.figma.com/file/xWXPTFcimavtrVtYV1dLF5/OPA-Dashboard?type=design&node-id=8-540&mode=design&t=GOkYiRAAgWVTQvOR-0)
 
