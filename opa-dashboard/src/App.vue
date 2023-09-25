@@ -1,5 +1,7 @@
 <template>
-  <notifications />
+  <notifications 
+  :closeOnClick = true
+  :pauseOnHover = true />
   <div class="wrapper">
     <Sidebar v-if="showSidebar"/>
     <router-view/>

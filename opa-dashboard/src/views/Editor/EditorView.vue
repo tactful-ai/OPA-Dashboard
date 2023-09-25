@@ -41,7 +41,7 @@
       <codemirror
       v-if="openTabs.length > 0"
       class="editor-to-be"
-      v-model="nodes[activeFileId].code"
+      v-model="nodes[String(activeFileId)].code"
       placeholder="Code goes here..."
       :style="{ height: '90%', minWidth: 'fit-content', maxWidth: '100%', textAlign: 'left', fontSize: '1.2rem', padding: '0.75em',  }"
       :autofocus="true"
@@ -103,6 +103,11 @@ interface EditedFile {
   code: string;
 }
 
+/**
+ * A component that allows the user to edit the files in the project repository through a code editor and
+ * lists the files in the project repository.
+ * @displayName Editor View
+ */
 export default defineComponent({
   name: "EditorView",
   components: {
@@ -114,89 +119,65 @@ export default defineComponent({
 
   data() {
     return {
+      /**
+       * A boolean that indicates whether the component is loading data.
+       * @model
+       */
       isLoading: true,
+      /**
+       * The directory structure of the project repository.
+       * @model
+       */
       directoryStructure: [] as DirectoryStructure,
+      /**
+       * The files that have been edited by the user. Saved for when the request is sent to the backend.
+       * Files are added to the array based on the @update event of the codemirror component.
+       * @model
+       */
       editedFiles: [] as EditedFile[],
-      // directoryStructure: [
-      // {
-      //     "file": true,
-      //     "path": "D:\\web\\backend\\OPA\\server\\build\\app.js",
-      //     "text": "app.js",
-      //     "ID": "\\app.js",
-      //     "code": "\"use strict\";\r\nvar __importDefault = (this && this.__importDefault) || function (mod) {\r\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\r\n};\r\nObject.defineProperty(exports, \"__esModule\", { value: true });\r\n// Import required modules\r\nconst body_parser_1 = __importDefault(require(\"body-parser\"));\r\nconst express_1 = __importDefault(require(\"express\"));\r\nconst retrieve_1 = __importDefault(require(\"./routes/retrieve\"));\r\nconst edit_1 = __importDefault(require(\"./routes/edit\"));\r\nconst gitManger_1 = __importDefault(require(\"./services/gitManger\"));\r\nconst swagger_1 = require(\"./services/swagger\");\r\nrequire(\"dotenv\").config();\r\n// Create an Express app\r\nconst app = (0, express_1.default)();\r\nconst port = process.env.PORT || 3000;\r\n// Middleware\r\napp.use(body_parser_1.default.json());\r\nconst cors_1 = __importDefault(require(\"cors\"));\r\napp.use((0, cors_1.default)({ origin: \"*\" }));\r\napp.use(retrieve_1.default);\r\napp.use(edit_1.default);\r\n// Error handling middleware\r\napp.use((err, req, res, next) => {\r\n    console.error(err.stack);\r\n    res.status(500).json({ error: \"Internal server error\" });\r\n});\r\n// Setup swagger\r\n(0, swagger_1.setupSwagger)(app);\r\n// Start the server\r\napp.listen(port, () => {\r\n    console.log(`Server is running on port ${port}`);\r\n    gitManger_1.default.init();\r\n});\r\n",
-      //     "child": [],
-      //     "root": true
-      // },
-      // {
-      //     "file": false,
-      //     "path": "D:\\web\\backend\\OPA\\server\\build\\controllers",
-      //     "text": "controllers",
-      //     "ID": "\\controllers",
-      //     "code": null,
-      //     "child": [],
-      //     "root": true
-      // }],
+      /**
+       * A configuration object used by treeview component.
+       * @model
+       */
       config: {
         roots: [] as string[],
-        // openedIcon: {
-        //   type: "img",
-        //   height: 16,
-        //   width: 16,
-        //   src: require("./../../assets/folder_open.svg"),
-        // },
-        // closedIcon: {
-        //   type: "img",
-        //   height: 16,
-        //   width: 16,
-        //   src: require("./../../assets/folder_closed.svg"),
-        // },
-        // roots: ["id1", "id2"],
-        // editable: true,
-        // dragAndDrop: true,
       },
-      // nodes: {
-      //   id1: {
-      //     text: "text1.jpg",
-      //     children: ["id11", "id12"],
-      //     state:{
-      //       opened: false
-      //     }
-      //   },
-      //   id11: {
-      //     text: "text11",
-      //     code: `const a = 1`
-      //   },
-      //   id12: {
-      //     text: "text12",
-      //     children: ["id121", "id122"],
-      //   },
-      //   id2: {
-      //     text: "text2",
-      //     code: `console.log('Hello world')`
-      //   },
-      //   id121: {
-      //     text: "text121",
-      //     code: `console.log('Hello again')`
-      //   },
-      //   id122: {
-      //     text: "text122",
-      //     code: `console.log('Hello kak')`
-      //   },
-      // },
+      /**
+       * The extensions used by the codemirror component. Includes the theme and language.
+       * @model
+       */
       extensions: [oneDark, javascript()],
+      /**
+       * The id of the active file. Used to determine which file to display in the codemirror component.
+       * @model
+       */
       activeFileId: null as string | null,
+      /**
+       * The ids of the files that are open in the codemirror component. Used to display the tabs.
+       * @model
+       */
       openTabs: [] as string[],
+      /**
+       * An object used by treeview component to display and tree-like structure.
+       * @model
+       */
       nodes : {} as any
     }
   },
 
   methods: {
+    /**
+     * logs a component's props/events. Used for debugging imported components.
+     * @param node 
+     */
     log(node: any){
-      // console.log(node)
-      // console.log(node.modelValue)
       console.log(node)
     },
-
+    /**
+     * Displays the appropriate icon for the node object based on its properties.
+     * @param node the node object the tree component
+     * @public
+     */
     findIcon(node: any){
       if (node.file){
         return require("./../../assets/code.svg")
@@ -207,11 +188,13 @@ export default defineComponent({
         return require("./../../assets/folder_closed.svg")
       }
     },
-
-    logID(id: any){
-      console.log(id.id)
-    },
-
+    /**
+     * Checks if the node object clicked on by the user is a file or a folder.
+     * If it is a file, it first checks if the file already axists as an open tab.
+     * If the node is a folder, it toggles the open state of the folder to display its contents.
+     * @param node the node object the tree component
+     * @public
+     */
     openCode(node: any){
       if (node.code){
         let openFileId = this.openTabs.find(id => id === node.id);
@@ -230,9 +213,13 @@ export default defineComponent({
         this.nodes[node.id].state.opened = !this.nodes[node.id].state.opened;     
        }
     },
-
+    /**
+     * Closes the tab of the file with the given id.
+     * Has a problem of not setting another tab to be the active tab.
+     * @param tab the id of the tab to be closed
+     * @public
+     */
     closeTab(tab: string) {
-      // Remove the tab from the open tabs
       this.openTabs = this.openTabs.filter(id => id !== tab);
       if (this.openTabs.length > 0){
         this.activeFileId = this.openTabs[0];
@@ -240,26 +227,49 @@ export default defineComponent({
         this.activeFileId = null;
       }
     },
-
+    /**
+     * Fetches the directory structure of the project repository from the backend.
+     * Uses transformDirectoryStructure to transform the directory structure retrieved from the backend
+     * into a format that can be used by the treeview component.
+     * @public
+     */
     async fetchDirectoryData() {
       this.isLoading = true;
       try {
         const response = await axios.get(get_directory_url, config);
         this.directoryStructure = response.data;
-        // console.log(this.directoryStructure)
         this.transformDirectoryStructure();
         console.log(response.data)
-      } catch (error) {
+        this.$notify({
+          title: 'Success',
+          text: 'Directory structure retrieved successfully',
+          type: 'success'
+        })
+      } catch (error: any) {
         console.error(error);
+        let message = ''
+        if (error.response){
+          message = error.response.data.message
+        } else {
+          message = error.message
+        }
+        this.$notify({
+          title: 'Error',
+          text: message,
+          type: 'error'
+        })
       } finally {
         this.isLoading = false;
       }
     },
-
-
+    /**
+     * Transforms the directory structure retrieved from the backend into a format that can be used by the treeview component.
+     * Would have been more efficient to use a computed property to transform the directory structure, 
+     * but the treeview component does not seem to work with computed properties.
+     * @public
+     */
     transformDirectoryStructure(){
       const map: any = {};
-
       // Convert array to map for easy lookup
       this.directoryStructure.forEach(item => {
         // map[item.ID] = { ...item, state:{opened: true} };
@@ -270,22 +280,17 @@ export default defineComponent({
           file: item.file,
          };
       });
-
-      // rename the child key to children
-      // this.directoryStructure.forEach(item => {
-      //   if (item.child.length > 0) {
-      //     map[item.ID].children = item.child;
-      //   }
-      // });
-
-      // add the rood nodes ids to config.roots
       this.config.roots = this.directoryStructure
         .filter(item => item.root)
         .map(item => item.ID);
-
       this.nodes = map;
     },
-
+    /**
+     * Pushes the id and code of the active file to the editedFiles array.
+     * If the file is already in the array, it replaces the code, since the codeminor component emits the @update event
+     * whenever the code is changed.
+     * @public
+     */
     pushToEditedFiles(){
       const index = this.editedFiles.findIndex(file => file.ID === this.activeFileId);
       // if the index is not -1, replace the code
@@ -299,7 +304,10 @@ export default defineComponent({
       }
       console.log(this.editedFiles)
     },
-
+    /**
+     * Saves the files that have been edited by the user to the backend. Triggered by the save button.
+     * @public
+     */
     async saveFiles(){
       this.isLoading = true;
       try {
@@ -308,52 +316,32 @@ export default defineComponent({
         }
         const response = await axios.put(save_files_url, data, config);
         console.log(response.data)
-      } catch (error) {
+        this.$notify({
+          title: 'Success',
+          text: 'Files saved successfully',
+          type: 'success'
+        })
+      } catch (error: any) {
         console.error(error);
+        let message = ''
+        if (error.response){
+          message = error.response.data.message
+        } else {
+          message = error.message
+        }
+        this.$notify({
+          title: 'Error',
+          text: message,
+          type: 'error'
+        })
       } finally {
         this.isLoading = false;
       }
     }
   },
-
   mounted() {
     this.fetchDirectoryData();
-  },
-
-  // computed: {
-  //   nodes(): any {
-  //     const map: any = {};
-
-  //     // Convert array to map for easy lookup
-  //     this.directoryStructure.forEach(item => {
-  //       // map[item.ID] = { ...item, state:{opened: true} };
-  //       map[item.ID] = { 
-  //         text: item.text,
-  //         code: item.code,
-  //         children: item.children,
-  //         file: item.file,
-  //         state: {
-  //           opened: true
-  //         }
-  //        };
-  //     });
-
-  //     // rename the child key to children
-  //     // this.directoryStructure.forEach(item => {
-  //     //   if (item.child.length > 0) {
-  //     //     map[item.ID].children = item.child;
-  //     //   }
-  //     // });
-
-  //     // add the rood nodes ids to config.roots
-  //     this.config.roots = this.directoryStructure
-  //       .filter(item => item.root)
-  //       .map(item => item.ID);
-  //     return map;
-  //   },
-  // },
-
-  
+  },  
 });
 </script>
 
@@ -460,15 +448,6 @@ export default defineComponent({
   border: 1px solid lightseagreen;
   background: #e0e0e0;
 }
-
-/* .bottom-btn:first-child {
-  background: lightseagreen;
-  color: white;
-} */
-/* .bottom-btn:nth-child(2) {
-  background: lightseagreen;
-  color: black;
-} */
 
 .bottom-btn:first-child:hover {
   background: #0B3954;

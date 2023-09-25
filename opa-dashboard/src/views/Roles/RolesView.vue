@@ -1,8 +1,10 @@
 <template>
     <transition name="fade">
-        <!-- exit animation works, enter animation does not -->
-        <!-- send selected role name and permission as empty -->
-        <AddRole v-if="showModal" @close="toggleModal" @add="displayRoles" mode="add" @loadingOn="isLoading = true" @loadingOff="isLoading = false"/>
+        <RoleModal 
+        v-if="showModal" 
+        @close="toggleModal" 
+        @add="displayRoles" 
+        mode="add" />
     </transition>
 
     <div class="spinner-container" v-show='isLoading'>
@@ -31,7 +33,7 @@
                     </tr>
                 </thead>
                 <tbody v-for="role in filteredRoles" :key='role.role'>
-                    <AddRole v-show="selectedRole === role" 
+                    <RoleModal v-show="selectedRole === role" 
                     @close="selectedRole = null" 
                     @add="displayRoles" 
                     :selected_role_name="role.role" 
@@ -51,7 +53,7 @@
 <script lang="ts">
 import { defineComponent } from "vue"
 import axios from 'axios'
-import AddRole from './AddRole.vue'
+import RoleModal from './RoleModal.vue'
 import { FulfillingBouncingCircleSpinner } from 'epic-spinners'
 
 interface Role {
@@ -59,30 +61,58 @@ interface Role {
   description: string;
 }
 
+/**
+ * A component to display all the roles in the system
+ * @displayName Roles View
+ */
+
 export default defineComponent({
     name: 'RolesView',
 
     components: {
         /**
-         * @component
-         * @see {@link AddRole}
-         * @description A modal for adding a new role
+         * @see RoleModal
          */
-        AddRole,
+        RoleModal,
         FulfillingBouncingCircleSpinner,
     },
 
     data(){
         return {
+            /**
+             * @model
+             * An array of roles to be displayed
+             */
             roles: [] as Role[],
+            /**
+             * @model 
+             * A boolean to toggle the modal
+             * @default false
+             */
             showModal: false,
+            /**
+             * @model 
+             * The role selected by the user to be edited or deleted when a table row is clicked.
+             * @default null
+             */
             selectedRole: null as Role | null,
+            /**
+             * @model
+             * The search term entered by the user to filter the roles when using the search bar
+             */
             searchTerm:'',
+            /**
+             * @model
+             * A boolean to display a spinner when the roles are being fetched or updated
+             */
             isLoading: true,
         }
     },
 
     computed: {
+        /**
+         * a computed property to filter the roles based on the search term entered by the user
+         */
         filteredRoles(): Role[]{
             if (this.searchTerm === '') return this.roles
             return this.roles.filter((role: Role) => {
@@ -93,25 +123,38 @@ export default defineComponent({
 
     methods:{
         /**
-         * @method toggleModal - Toggles the showModal property to display the AddRole modal
+         * Toggles the showModal property to display the modal, triggered when the add button is clicked,
+         * ,when the user clicks on a table row to edit or delete a role, or when the user clicks on the close button
+         * @public
          */
         toggleModal() {
             this.showModal = !this.showModal
         },
 
+        /**
+         * Fetches the roles from the backend and updates the roles array. Triggered when the component is mounted,
+         * or when a role is added or edited
+         * @public
+         */
         async displayRoles(){
+
             this.isLoading = true
             console.log('displaying roles...')
             try {
-            const url: string = process.env.VUE_APP_BASE_URL + 'roles'
-            const config = {
-                headers: {
-                    "ngrok-skip-browser-warning": "true",
+                const url: string = process.env.VUE_APP_BASE_URL + 'roles'
+                const config = {
+                    headers: {
+                        "ngrok-skip-browser-warning": "true",
+                    }
                 }
-            }
-            const response = await axios.get(url, config);
-            this.roles = response.data.roles;
-            console.log(response.data)
+                const response = await axios.get(url, config);
+                this.roles = response.data.roles;
+                console.log(response.data)
+                this.$notify({
+                    title: 'Success',
+                    text: 'Roles fetched successfully',
+                    type: 'success'
+                });
             } catch (error) {
                 console.error(error);
                 this.roles = [
@@ -128,8 +171,14 @@ export default defineComponent({
                         'description': "desc3",
                     },
                 ]
+                this.$notify({
+                    title: 'Error',
+                    text: 'Roles could not be fetched',
+                    type: 'error'
+                });
+            } finally {
+                this.isLoading = false
             }
-            this.isLoading = false
         }
     },
     mounted() {

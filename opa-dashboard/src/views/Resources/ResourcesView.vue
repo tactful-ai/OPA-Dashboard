@@ -37,9 +37,7 @@
                         <td>{{ key }}</td>
                         <td>
                             <span class="pill" v-for="scope in values" :key='scope'>
-                                <!-- <span class='pill'>  -->
-                                    {{scope}} 
-                                    <!-- </span> -->
+                                {{scope}} 
                             </span>
                         </td>
                     </tr>
@@ -55,23 +53,23 @@ import { defineComponent } from "vue"
 import axios from 'axios'
 import ResourceModal from './ResourceModal.vue'
 
-interface ResourceResponse {
-  resources: {
-    [key: string]: string[];
-  };
-}
 
 interface Resource {
   [key: string]: string[];
 }
 
 const url: string = process.env.VUE_APP_BASE_URL + 'resources'
+// need to include this header to work properly with ngrok
 const config = {
     headers: {
         "ngrok-skip-browser-warning": "true",
     }
 }
 
+/**
+ * A component to display all the resources and the accompanying scopes in the system
+ * @displayName Resources View
+ */
 export default defineComponent({
     name: 'ResourcesView',
 
@@ -81,14 +79,37 @@ export default defineComponent({
 
     data(){
         return{
+            /**
+             * The resources to be displayed.
+             * A resource object consists of key value pairs where the key is the resource name and the value is an array of scopes
+             * @model
+             */
             resources: {} as Resource,
+            /**
+             * A boolean to toggle the modal
+             * @default false
+             * @model
+             */
             showModal: false,
+            /**
+             * The resource that is selected to be edited when a table row is clicked.
+             * @default null
+             * @model
+             */
             selectedResource: null as string | null,
+            /**
+             * The search term entered by the user to filter the resources based on the resource name
+             * @default ''
+             * @model
+             */
             searchTerm: ''
         }
     },
 
     computed: {
+        /**
+         * A computed property to filter the resources based on the search term entered by the user
+         */
         filteredResources(): Resource {
             if (this.searchTerm === '') {
                 return this.resources;
@@ -106,19 +127,39 @@ export default defineComponent({
 
 
     methods:{
+        /**
+         * Toggles the showModal property to display the modal, triggered when the add button is clicked,
+         * when the user clicks on a table row to edit or delete a role, 
+         * or when the user clicks on the close button in the modal
+         * @public
+         */
         toggleModal(){
             this.showModal = !this.showModal
         },
 
+        /**
+         * Fetches the resources from the backend and stores them in the resources property.
+         * Triggered when the component is mounted, or when a resource is added or edited
+         * @public
+         */
         async fetchResources(){
             console.log('displaying resources...')
             try{
                 const response = await axios.get(url, config)
                 this.resources = response.data.resources
                 console.log(response.data.resources)
-                console.log(Object.keys(this.resources).length)
-            } catch (error){
+                this.$notify({
+                    title: 'Success',
+                    text: 'Resources fetched successfully',
+                    type: 'success'
+                })
+            } catch (error: any){
                 console.log(error)
+                this.$notify({
+                    title: 'Error',
+                    text: 'Could not fetch resources',
+                    type: 'error'
+                })
                 this.resources = {
                     "book": ["read","order","review"],
                     "document": ["read","order","review"],

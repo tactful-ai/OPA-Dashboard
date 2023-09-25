@@ -45,6 +45,10 @@
 </template>
 
 <script>
+/**
+ * A component used in all pages to display the sidebar for navigation.
+ * @displayName Sidebar
+ */
 export default {
 
 }

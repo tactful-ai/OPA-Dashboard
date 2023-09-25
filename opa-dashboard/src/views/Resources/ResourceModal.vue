@@ -33,7 +33,6 @@
                     :key='scope' 
                     @click="removeScope(scope)">
                         {{scope}}
-                        <!-- <img src="./../../assets/close.svg" alt="Delete" class="delete-scope"> -->
                     </span>
                 </div>
 
@@ -53,22 +52,52 @@
     </div>
 </template>
 
-<script>
+<script lang='ts'>
+import { defineComponent } from 'vue'
 import axios from 'axios'
 import { FulfillingBouncingCircleSpinner } from 'epic-spinners'
 
 const resources_url = process.env.VUE_APP_BASE_URL + 'resources'
 const scopes_url = process.env.VUE_APP_BASE_URL + 'scopes'
+// need to add this header to work properly with ngrok
 const config = {
     headers: {
         "ngrok-skip-browser-warning": "true",
     }
 }
 
-export default {
+/**
+ * A modal that allows the user to add a new resource or edit an existing resource's name and scopes.
+ * @displayName Resource Modal
+ */
+export default defineComponent({
     name: 'ResourceModal',
 
-    props: ['selected_resource_name', 'selected_resource_scopes', 'mode'],
+    props: {
+        /**
+         * The name of the resource to be edited when the user clicks on a table row.
+         * Passed to the modal as a prop when the mode is 'edit'.
+         */
+        selected_resource_name: {
+            type: String,
+            default: ''
+        },
+        /**
+         * The scopes of the resource to be edited when the user clicks on a table row.
+         * Passed to the modal as a prop when the mode is 'edit'.
+         */
+        selected_resource_scopes: {
+            type: Array,
+            default: []
+        }, 
+        /**
+         * The mode of the modal component. 
+         * @values add, edit
+         */
+        mode: {
+            type: String,
+        }
+    },
 
     components: {
         FulfillingBouncingCircleSpinner
@@ -76,40 +105,85 @@ export default {
 
     data(){
         return{
-            resource_name: '',
-            scopes: [],
-            tempScope: '',
-            originalResourceName: '',
-            scopesChanged: false,
-            isLoading: false,
+            /**
+             * The name of the resource to be added or edited.
+             * @model
+             */
+            resource_name: '' as string,
+            /**
+             * The scopes of the resource to be added or edited.
+             * @model
+             */
+            scopes: [] as string[],
+            /**
+             * A variable to temporarily store the scope entered by the user before adding it to the scopes array.
+             * @model
+             */
+            tempScope: '' as string,
+            /**
+             * The original name of the resource to be edited.
+             * Needed to update the resource name in the backend.
+             * @model
+             */
+            originalResourceName: '' as string,
+            /**
+             * A boolean to check if the scopes have been changed,
+             * to determine the type of request to be sent to the backend when editing a resource.
+             * @model
+             */
+            scopesChanged: false as boolean,
+            /**
+             * A boolean to display a spinner when the resources are being fetched or updated
+             * @model
+             */
+            isLoading: false as boolean,
         }
     },
 
     methods:{
+        /**
+         * Emits a close event to the parent component to close the modal.
+         */
         closeModal(){
+            /**
+             * Triggered when anywhere outside the modal is clicked, 
+             * when the cancel button is clicked or when the operation is done successfully
+             * @event close
+             */
             this.$emit('close')
         },
-        addScope(e){
-            // check if this.scopes is null
+        /**
+         * Gets called when the user presses a key while typing in the scope input field.
+         * Adds the scope to the scopes array when the user presses the Enter key.
+         * @param {KeyboardEvent} e The keyup event triggered when the user presses a key 
+         * @public
+         */
+        addScope(e: KeyboardEvent){
             if(!this.scopes){
                 this.scopes = []
             }
             if(this.tempScope && e.key == 'Enter'){
                 if(!this.scopes.includes(this.tempScope)){
                     this.scopes.push(this.tempScope.trim())
-                    // this.scopesToAdd.push(this.tempScope.trim())
                     this.scopesChanged = true
                 }
                 this.tempScope = ''
             }
         },
-        removeScope(scope){
+        /**
+         * Removes the scope from the scopes array when the user clicks on the scope pill.
+         * @param {string} scope The scope to be removed from the scopes array
+         * @public
+         */
+        removeScope(scope: string){
             this.scopes = this.scopes.filter(s => s !== scope)
-            // this.scopesToAdd = this.scopesToAdd.filter(s => s !== scope)
-            // this.scopesToDelete.push(scope)
-            this.scopeToDelete = scope
             this.scopesChanged = true
         },
+        /**
+         * Sends a POST request to the backend to add a new resource.
+         * Emits an update event to the parent component to update the resources table.
+         * @public
+         */
         async submitResource(){
             this.isLoading = true
             try{
@@ -120,16 +194,41 @@ export default {
                 }
                 console.log(data)
                 const res = await axios.post(resources_url, data, config)
+                this.$notify({
+                    title: 'Success',
+                    text: 'Resource added successfully',
+                    type: 'success'
+                })
+                /**
+                 * Triggered when the resource is added or edited successfully to update the resources table.
+                 * The update is done by fetching the resources from the backend.
+                 * @event update
+                 */
                 this.$emit('update')
                 this.closeModal()
-            } catch(err){
+            } catch(err: any){
                 console.log(err)
+                let message = ''
+                if (err.response){
+                    message = err.response.data.message
+                } else {
+                    message = "Something went wrong, please try again later"
+                }
+                this.$notify({
+                    title: 'Error',
+                    text: message,
+                    type: 'error'
+                })
             } finally{
                 this.isLoading = false
             }
         },
+        /**
+         * Sends a DELETE request to the backend to delete a resource.
+         * Emits an update event to the parent component to update the resources table.
+         * @public
+         */
         async deleteResource(){
-            // this.$emit('loadingOn')
             this.isLoading = true
             try{
                 console.log('deleting resource...')
@@ -139,56 +238,36 @@ export default {
                 console.log(data)
                 const res = await axios.delete(resources_url, {data: data, headers: config.headers})
                 console.log(res)
+                this.$notify({
+                    title: 'Success',
+                    text: 'Resource deleted successfully',
+                    type: 'success'
+                })
                 this.$emit('update')
                 this.closeModal()
-                // this.$emit('update')
-                // this.closeModal()
-            } catch(err){
+            } catch(err: any){
                 console.log(err)
-            } finally{
-                this.isLoading = false
-            }
-        },
-
-        async submitScope(){
-            this.isLoading = true
-            try{
-                console.log('adding scope...')
-                const data = {
-                    resource: this.resource_name,
-                    // scopes: this.scopesToAdd
-                    scopes: this.scopes
+                let message = ''
+                if (err.response){
+                    message = err.response.data.message
+                } else {
+                    message = "Something went wrong, please try again later"
                 }
-                console.log(data)
-                const res = await axios.post(scopes_url, data, config)
-                console.log(res)
-                this.$emit('update')
-                this.closeModal()
-            } catch(err){
-                console.log(err)
+                this.$notify({
+                    title: 'Error',
+                    text: message,
+                    type: 'error'
+                })
             } finally{
                 this.isLoading = false
             }
         },
-        async deleteScope(){
-            this.isLoading = true
-            try{
-                console.log('deleting scope...')
-                const data = {
-                    resource: this.resource_name,
-                    scope: this.scopesToDelete
-                }
-                console.log(data)
-                const res = await axios.delete(scopes_url, {data: data, headers: config.headers})
-                console.log(res)
-                this.$emit('update')
-                this.closeModal()
-            } catch(err){
-                console.log(err)
-            } finally{
-                this.isLoading = false
-            }
-        },
+        /**
+         * Sends a PUT request to the backend to edit a resource.
+         * Checks if the resource name has been changed to determine the type of request to be sent to the backend.
+         * Emits an update event to the parent component to update the resources table.
+         * @public
+         */
         async editResourceAndScopes(){
             this.isLoading = true
             try{
@@ -211,10 +290,26 @@ export default {
                 console.log(data)
                 const res = await axios.put(resources_url, data, config)
                 console.log(res)
+                this.$notify({
+                    title: 'Success',
+                    text: 'Resource edited successfully',
+                    type: 'success'
+                })
                 this.$emit('update')
                 this.closeModal()
-            } catch(err){
+            } catch(err: any){
                 console.log(err)
+                let message = ''
+                if (err.response){
+                    message = err.response.data.message
+                } else {
+                    message = "Something went wrong, please try again later"
+                }
+                this.$notify({
+                    title: 'Error',
+                    text: message,
+                    type: 'error'
+                })
             } finally{
                 this.isLoading = false
             }
@@ -222,6 +317,10 @@ export default {
     },
 
     mounted(){
+        /**
+         * Sets the resource name and scopes to the selected resource's name and scopes when the mode is 'edit'.
+         * Also keeps a copy of the original resource name to check if the resource name has been changed.
+         */
         if(this.mode === 'edit'){
             this.resource_name = this.selected_resource_name
             // deep copy selected_resource_scopes into scopes
@@ -231,9 +330,8 @@ export default {
             }
             this.originalResourceName = this.selected_resource_name
         }
-        console.log(this.scopes.length)
     }
-}
+});
 </script>
 
 <style scoped>

@@ -30,7 +30,7 @@
     </div>
 </template>
 
-<script>
+<script lang='ts'>
 import axios from 'axios'
 import { FulfillingBouncingCircleSpinner } from 'epic-spinners'
 
@@ -41,10 +41,38 @@ const config = {
     }
 }
 
+/**
+ * A modal component that allows the user to add a new role or edit an existing role
+ * @displayName Role Modal
+ */
 export default {
-    name: 'Modal',
+    name: 'RoleModal',
     
-    props: ['selected_role_name', 'selected_role_description', 'mode'],
+    props: {
+        /**
+         * The name of the role to be edited when the user click on a table row. 
+         * Passed to the modal component as a prop when the mode is edit
+         */
+        selected_role_name: {
+            type: String,
+            default: ''
+        }, 
+        /**
+         * The description of the role to be edited when the user click on a table row. 
+         * Passed to the modal component as a prop when the mode is edit
+         */
+        selected_role_description: {
+            type: String,
+            default: ''
+        }, 
+        /**
+         * The mode of the modal component. 
+         * @values add, edit
+         */
+        mode:{
+            type: String
+        }
+    },
 
     components: {
         FulfillingBouncingCircleSpinner
@@ -53,55 +81,39 @@ export default {
     data(){
         return{
             /**
-             * @property {String} role_name - The name of the role to be added data-bound to the input field
-             * @default ''
+             * The name of the role to be added, data-bound to the input field
+             * @model
              */
             role_name: '',
             /**
-             * @property {String} role_description - The description of the role to be added data-bound to the input field
-             * @default ''
+             * The description of the role to be added, data-bound to the input field
+             * @model
              */
             role_description: '',
+            /**
+             * A boolean to display a spinner when the roles are being fetched or updated
+             * @model
+             */
             isLoading: false
         }
     },
-    // computed: {
-    //     role_name: {
-    //         get() {
-    //             return this.selected_role_name;
-    //         },
-    //         set(value) {
-    //             this.$emit('update:selected_role_name', value);
-    //         }
-    //     },
-    //     role_description: {
-    //         get() {
-    //             return this.selected_role_description;
-    //         },
-    //         set(value) {
-    //             this.$emit('update:selected_role_description', value);
-    //         }
-    //     }
-    // },
-    // watch: {
-    //     role_name(val) {
-    //         console.log('role_name changed to: ' + val);
-    //     },
-    //     role_description(val) {
-    //         console.log('role_description changed to: ' + val);
-    //     }
-    // },
     methods: {
         /**
-         * @method closeModal - Emits a close event to the parent component to close the modal
+         * Emits en event to the parent component to close the modal
          */
         closeModal(){
+            /**
+             * Triggered when anywhere outside the modal is clicked, 
+             * when the cancel button is clicked or when the operation is done successfully
+             * @event close
+             */
             this.$emit('close')
         },
 
         /**
-         * @method handleAdd - Handles the addition of a new role by sending a POST request to the backend
-         * Emits an add event to the parent component to add the new role to the list of roles
+         * Sends a POST request to the backend to add a new role. The new role object
+         * uses the role_name and role_description v-models data-bound to the input fields
+         * @public
          */
         async handleAdd(){
             this.isLoading = true
@@ -121,15 +133,32 @@ export default {
                     text: 'Role added successfully',
                     type: 'success'
                 });
+                /**
+                 * Triggered when a new role is added,editted, or deleted successfully so the roles table can be updated.
+                 * The update is done by fetching the roles from the backend
+                 * @event add
+                 */
                 this.$emit('add')
                 this.closeModal()
-            } catch (err){
+            } catch (err: any){
                 console.log(err)
+                this.$notify({
+                    title: 'Error',
+                    text: err.response.data.message,
+                    type: 'error'
+                });
                 this.$emit('add')
             } finally {
                 this.isLoading = false
             }
         },
+
+        /**
+         * Sends a DELETE request to the backend to delete a role. The role to be deleted
+         * uses the role_name v-model data-bound to the input field, which is populated through the selected_role_name prop
+         * when the user clicks on a table row 
+         * @public
+         */
         async handleDelete(){
             this.isLoading = true
             try{
@@ -148,14 +177,25 @@ export default {
                 });
                 this.$emit('add')
                 this.closeModal()
-            } catch (err){
+            } catch (err: any){
                 console.log(err)
+                this.$notify({
+                    title: 'Error',
+                    text: err.response.data.message,
+                    type: 'error'
+                });
                 this.$emit('add')
             } finally {
                 this.isLoading = false
             }
         },
 
+        /**
+         * Sends a PUT request to the backend to edit a role. The role to be edited
+         * uses the role_name and role_description v-models data-bound to the input fields, which are populated through the 
+         * selected_role_name and selected_role_description props when the user clicks on a table row 
+         * @public
+         */
         async handleEdit(){
             this.isLoading = true
             try{
@@ -170,8 +210,13 @@ export default {
                 console.log(response)
                 this.$emit('add')
                 this.closeModal()
-            } catch (err){
+            } catch (err: any){
                 console.log(err)
+                this.$notify({
+                    title: 'Error',
+                    text: err.response.data.message,
+                    type: 'error'
+                });
                 this.$emit('add')
             } finally {
                 this.isLoading = false
@@ -179,6 +224,9 @@ export default {
         }
     },
     mounted() {
+        /**
+         * Populates the input fields with the selected role data when the mode is edit
+         */
         this.role_name = this.selected_role_name
         this.role_description = this.selected_role_description
     }

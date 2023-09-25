@@ -56,7 +56,7 @@ export default {
 </script>
 
 <docs lang="md">
-This button is amazing, use it responsibly.
+An example button component used by vue styleguidist.
 
 ## Examples
 

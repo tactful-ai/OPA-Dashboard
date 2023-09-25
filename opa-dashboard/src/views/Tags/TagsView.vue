@@ -43,8 +43,10 @@ interface tagResponse{
     tags: string[],
     newTag: string
 }
-
-
+/**
+ * A component to create a new tag and publish it to the project repository
+ * @displayName Tags View
+ */
 export default defineComponent({
     components:{
         FulfillingBouncingCircleSpinner
@@ -52,28 +54,45 @@ export default defineComponent({
 
     data() {
         return {
+            /**
+             * An object to store the tag version entered by the user in the individual fields
+             * @model
+             */
             tag: {
                 major: '',
                 minor: '',
                 patch: ''
             },
+            /**
+             * An array to store the existing tags sent by the backend.
+             * Used to perform client side validation to check if the tag already exists
+             * @model
+             */
             existingTags: [] as string[],
+            /**
+             * A boolean to show the spinner when the page is loading
+             * @model
+             */
             isLoading: true
         }
     },
     methods: {
+        /**
+         * A method to submit the form and create a new tag
+         * @public
+         */
         async submitForm() {
             this.isLoading = true
             // check if the tag already exists, if it does, notify the user
-            // if (this.existingTags.includes(`v${this.tag.major}.${this.tag.minor}.${this.tag.patch}`)) {
-            //     this.$notify({
-            //         title: 'Error',
-            //         text: `Tag v${this.tag.major}.${this.tag.minor}.${this.tag.patch} already exists`,
-            //         type: 'error'
-            //     });
-            //     return;
-            // }
             const tagVersion = `v${this.tag.major}.${this.tag.minor}.${this.tag.patch}`;
+            if (this.existingTags.includes(tagVersion)) {
+                this.$notify({
+                    title: 'Error',
+                    text: `Tag ${tagVersion} already exists`,
+                    type: 'error'
+                });
+                return;
+            }
             try {
                 const response = await axios.post(url, { tag: tagVersion }, config);
                 console.log(response);
@@ -83,16 +102,27 @@ export default defineComponent({
                     type: 'success'
                 });
             } catch (error: any) {
+                let message = ''
+                if (error.response) {
+                    message = error.response.data.message;
+                } else {
+                    message = error.message;
+                }
+                console.log(error);
                 this.$notify({
                     title: 'Error',
-                    text: `${error.response.data.message}`,
+                    text: `${message}`,
                     type: 'error'
-                }) ;
+                });
             } finally {
                 this.isLoading = false
             }
         },
-
+        /**
+         * A method to get the existing tags from the backend.
+         * Also returns the expected tag number to be created next and sets it in the tag object
+         * @public
+         */
         async getTags() {
             this.isLoading = true
             try{
@@ -104,11 +134,17 @@ export default defineComponent({
                 this.tag.major = tagArray[0].slice(1);
                 this.tag.minor = tagArray[1];
                 this.tag.patch = tagArray[2];
-            } catch (error) {
+            } catch (error: any) {
+                let message = ''
+                if (error.response) {
+                    message = error.response.data.message;
+                } else {
+                    message = error.message;
+                }
                 console.log(error);
                 this.$notify({
                     title: 'Error',
-                    text: `${error}`,
+                    text: `${message}`,
                     type: 'error'
                 });
             } finally {
@@ -116,7 +152,6 @@ export default defineComponent({
             }
         }
     },
-
     mounted() {
         this.getTags();
     }
