@@ -35,8 +35,8 @@
                 <tbody v-for="role in filteredRoles" :key='role.role'>
                     <RoleModal
                     v-show="selectedRole === role" 
-                    :selectedRoleName="role.role" 
-                    :selectedRoleDescription="role.description" 
+                    :selected-role-name="role.role" 
+                    :selected-role-description="role.description" 
                     mode="edit" 
                     @close="selectedRole = null"
                     @add="displayRoles"/>
