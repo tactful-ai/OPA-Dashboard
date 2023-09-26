@@ -4,9 +4,9 @@
         <!-- send selected role name and permission as empty -->
         <ResourceModal 
         v-if="showModal" 
+        mode="add" 
         @close="toggleModal" 
-        @update="fetchResources" 
-        mode="add"/>
+        @update="fetchResources"/>
     </transition>
     <div class="resources">
         <div class="page-heading">
@@ -14,10 +14,10 @@
             <span> Resources </span>
         </div>
         <div class="top-container">
-            <input type="text" placeholder="Search for a Resource" v-model="searchTerm">
-            <button @click.exact="toggleModal" class='add-resource'>Add +</button>
+            <input v-model="searchTerm" type="text" placeholder="Search for a Resource">
+            <button class='add-resource' @click.exact="toggleModal">Add +</button>
         </div>
-        <div class="table-container" v-if="Object.keys(resources).length">
+        <div v-if="Object.keys(resources).length" class="table-container">
             <table>
                 <thead>
                     <tr>
@@ -28,15 +28,15 @@
                 <tbody v-for="(values, key) in filteredResources" :key="key">
                     <ResourceModal 
                     v-if="selectedResource === key" 
-                    @close="selectedResource = null" 
-                    @update="fetchResources" 
-                    :selected_resource_name="key"
-                    :selected_resource_scopes="values"
-                    mode="edit"/>
+                    :selected-resource-name="key" 
+                    :selected-resource-scopes="values" 
+                    mode="edit"
+                    @close="selectedResource = null"
+                    @update="fetchResources"/>
                     <tr @click= "selectedResource = String(key)">
                         <td>{{ key }}</td>
                         <td>
-                            <span class="pill" v-for="scope in values" :key='scope'>
+                            <span v-for="scope in values" :key='scope' class="pill">
                                 {{scope}} 
                             </span>
                         </td>
@@ -125,6 +125,10 @@ export default defineComponent({
         }
     },
 
+    mounted(){
+        this.fetchResources()
+    },
+
 
     methods:{
         /**
@@ -167,10 +171,6 @@ export default defineComponent({
                 }
             }
         }
-    },
-
-    mounted(){
-        this.fetchResources()
     }
 })
 </script>

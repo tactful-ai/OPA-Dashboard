@@ -1,6 +1,6 @@
 <template>
     <div class="tags">
-        <div class="spinner-container" v-if='isLoading'>
+        <div v-if='isLoading' class="spinner-container">
             <fulfilling-bouncing-circle-spinner
             :animation-duration="2000"
             :size="60"
@@ -16,11 +16,11 @@
         <div class="page-body">
             <form @submit.prevent="submitForm">
                 <span>v</span>
-                <input type="text" v-model="tag.major" placeholder="Major version" required />
+                <input v-model="tag.major" type="text" placeholder="Major version" required />
                 <span>.</span>
-                <input type="text" v-model="tag.minor" placeholder="Minor version" required />
+                <input v-model="tag.minor" type="text" placeholder="Minor version" required />
                 <span>.</span>
-                <input type="text" v-model="tag.patch" placeholder="Patch version" required />
+                <input v-model="tag.patch" type="text" placeholder="Patch version" required />
                 <button type="submit">Create Tag</button>
             </form>
         </div>
@@ -37,11 +37,6 @@ const config = {
     headers: {
         "ngrok-skip-browser-warning": "true",
     }
-}
-
-interface tagResponse{
-    sortedTags: string[],
-    newTag: string
 }
 /**
  * A component to create a new tag and publish it to the project repository
@@ -75,6 +70,9 @@ export default defineComponent({
              */
             isLoading: true
         }
+    },
+    mounted() {
+        this.getTags();
     },
     methods: {
         /**
@@ -152,9 +150,6 @@ export default defineComponent({
                 this.isLoading = false
             }
         }
-    },
-    mounted() {
-        this.getTags();
     }
 });
 </script>

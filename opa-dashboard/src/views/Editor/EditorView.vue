@@ -1,6 +1,6 @@
 <template>
 
-  <div class="spinner-container" v-if='isLoading'>
+  <div v-if='isLoading' class="spinner-container">
         <looping-rhombuses-spinner
         :animation-duration="2000"
         :size="60"
@@ -14,8 +14,8 @@
     class="directory"
     :nodes="nodes"
     :config="config"
-    @nodeFocus="openCode"
     style="display: flex; flex-direction: column; align-items: flex-start; text-align: left;"
+    @node-focus="openCode"
     >
     <template #before-input="props">
       <span class="before"> 
@@ -26,9 +26,9 @@
     <div class="editor-wrapper">
       <div class="tabs">
         <div
-          class="tab" 
-          v-for="tab in openTabs"
+          v-for="tab in openTabs" 
           :key="tab"
+          class="tab"
           :class="{ active: tab === activeFileId }"
           @click.exact="activeFileId = tab"
         >
@@ -40,15 +40,15 @@
       <button @click="log(config.roots)">Log Roots</button> -->
       <codemirror
       v-if="openTabs.length > 0"
-      class="editor-to-be"
       v-model="nodes[String(activeFileId)].code"
+      class="editor-to-be"
       placeholder="Code goes here..."
       :style="{ height: '90%', minWidth: 'fit-content', maxWidth: '100%', textAlign: 'left', fontSize: '1.2rem', padding: '0.75em',  }"
       :autofocus="true"
       :indent-with-tab="true"
       :tab-size="2"
       :extensions="extensions"
-      @update:modelValue="pushToEditedFiles"
+      @update:model-value="pushToEditedFiles"
       />
       <div v-else class="editor-to-be">
         <h1 style="text-align: center;">Select a file to edit</h1>
@@ -69,8 +69,6 @@ import axios from "axios";
 import treeview from "vue3-treeview";
 // const treeview = require("vue3-treeview");
 import "vue3-treeview/dist/style.css";
-import hljs from 'highlight.js';
-import CodeEditor from "simple-code-editor";
 
 import { Codemirror } from 'vue-codemirror'
 import { javascript } from '@codemirror/lang-javascript'
@@ -112,7 +110,6 @@ export default defineComponent({
   name: "EditorView",
   components: {
     tree: treeview,
-    CodeEditor,
     Codemirror,
     LoopingRhombusesSpinner
   },
@@ -163,6 +160,9 @@ export default defineComponent({
        */
       nodes : {} as any
     }
+  },
+  mounted() {
+    this.fetchDirectoryData();
   },
 
   methods: {
@@ -291,8 +291,7 @@ export default defineComponent({
      * whenever the code is changed.
      * @public
      */
-    pushToEditedFiles(e:any){
-      console.log(this.directoryStructure)
+    pushToEditedFiles(){
       const index = this.editedFiles.findIndex(file => file.ID === this.activeFileId);
       // if the index is not -1, replace the code
       if (index !== -1){
@@ -374,9 +373,6 @@ export default defineComponent({
         this.isLoading = false;
       }
     }
-  },
-  mounted() {
-    this.fetchDirectoryData();
   },  
 });
 </script>

@@ -1,7 +1,7 @@
 <template>
   <div class="backdrop" @click.self="closeModal">
 
-    <div class="spinner-container" v-if='isLoading'>
+    <div v-if='isLoading' class="spinner-container">
         <fulfilling-bouncing-circle-spinner
         :animation-duration="2000"
         :size="60"
@@ -15,22 +15,22 @@
 
             <form @submit.prevent="submitResource">
                 <label for="">Resource Name:</label>
-                <input type="text" v-model="resource_name" required>
+                <input v-model="resource_name" type="text" required>
 
                 <label for="">Scopes:</label>
                 <input 
-                type="text"
                 v-model="tempScope"
+                type="text"
+                placeholder="Enter a scope followed by an Enter"
                 @keyup="addScope"
                 @keypress.enter.prevent
-                placeholder="Enter a scope followed by an Enter"
                 > 
 
                 <div class="scopes-container">
                     <span 
-                    class="pill" 
                     v-for="scope in scopes" 
                     :key='scope' 
+                    class="pill" 
                     @click="removeScope(scope)">
                         {{scope}}
                     </span>
@@ -40,7 +40,7 @@
                     <button class="close" @click.prevent="closeModal">Cancel</button>
                     <button v-if="mode === 'add'">Add Resource</button>
 
-                    <div class="actions" v-else-if="mode === 'edit'">
+                    <div v-else-if="mode === 'edit'" class="actions">
                         <button @click.prevent="deleteResource">Delete Resource</button>
                         <button @click.prevent="editResourceAndScopes">Save Changes</button>
                     </div>
@@ -58,7 +58,6 @@ import axios from 'axios'
 import { FulfillingBouncingCircleSpinner } from 'epic-spinners'
 
 const resources_url = process.env.VUE_APP_BASE_URL + 'resources'
-const scopes_url = process.env.VUE_APP_BASE_URL + 'scopes'
 // need to add this header to work properly with ngrok
 const config = {
     headers: {
@@ -73,12 +72,16 @@ const config = {
 export default defineComponent({
     name: 'ResourceModal',
 
+    components: {
+        FulfillingBouncingCircleSpinner
+    },
+
     props: {
         /**
          * The name of the resource to be edited when the user clicks on a table row.
          * Passed to the modal as a prop when the mode is 'edit'.
          */
-        selected_resource_name: {
+        selectedResourceName: {
             type: String,
             default: ''
         },
@@ -86,9 +89,9 @@ export default defineComponent({
          * The scopes of the resource to be edited when the user clicks on a table row.
          * Passed to the modal as a prop when the mode is 'edit'.
          */
-        selected_resource_scopes: {
+        selectedResourceScopes: {
             type: Array,
-            default: []
+            default: [] as string[]
         }, 
         /**
          * The mode of the modal component. 
@@ -96,12 +99,10 @@ export default defineComponent({
          */
         mode: {
             type: String,
+            default: 'add'
         }
     },
-
-    components: {
-        FulfillingBouncingCircleSpinner
-    },
+emits: ['close', 'update'],
 
     data(){
         return{
@@ -137,6 +138,22 @@ export default defineComponent({
              * @model
              */
             isLoading: false as boolean,
+        }
+    },
+
+    mounted(){
+        /**
+         * Sets the resource name and scopes to the selected resource's name and scopes when the mode is 'edit'.
+         * Also keeps a copy of the original resource name to check if the resource name has been changed.
+         */
+        if(this.mode === 'edit'){
+            this.resource_name = this.selectedResourceName
+            // deep copy selected_resource_scopes into scopes
+            this.scopes = JSON.parse(JSON.stringify(this.selectedResourceScopes))
+            if (this.scopes === null){
+                this.scopes = []
+            }
+            this.originalResourceName = this.selectedResourceName
         }
     },
 
@@ -193,7 +210,7 @@ export default defineComponent({
                     scopes: this.scopes
                 }
                 console.log(data)
-                const res = await axios.post(resources_url, data, config)
+                await axios.post(resources_url, data, config)
                 this.$notify({
                     title: 'Success',
                     text: 'Resource added successfully',
@@ -314,22 +331,6 @@ export default defineComponent({
                 this.isLoading = false
             }
         },
-    },
-
-    mounted(){
-        /**
-         * Sets the resource name and scopes to the selected resource's name and scopes when the mode is 'edit'.
-         * Also keeps a copy of the original resource name to check if the resource name has been changed.
-         */
-        if(this.mode === 'edit'){
-            this.resource_name = this.selected_resource_name
-            // deep copy selected_resource_scopes into scopes
-            this.scopes = JSON.parse(JSON.stringify(this.selected_resource_scopes))
-            if (this.scopes === null){
-                this.scopes = []
-            }
-            this.originalResourceName = this.selected_resource_name
-        }
     }
 });
 </script>

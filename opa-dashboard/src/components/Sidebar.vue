@@ -44,10 +44,10 @@
     </nav>
 </template>
 
-<script>
+<script lang="ts">
 /**
  * A component used in all pages to display the sidebar for navigation.
- * @displayName Sidebar
+ * @displayName Side Bar
  */
 export default {
 
@@ -68,7 +68,7 @@ export default {
 
     nav a {
     font-weight: bold;
-    color: white;
+    color: #2c3e50;
     }
 
     nav a.router-link-exact-active {
@@ -76,7 +76,7 @@ export default {
     }
 
     nav {
-        background-color: #4361EE;
+        background-color: #F2F8FF;
         float: left;
         position: relative;
         z-index: 1;
@@ -92,14 +92,7 @@ export default {
 
     nav img {
         width: 100%;
-        /* margin-bottom: 10em; */
-    }
-
-    .logo-container{
-        padding: 1em;
-        border-radius: 0.5em;
-        background-color: white;
-        margin-bottom: 2em;
+        margin-bottom: 10em;
     }
 
     ul {
@@ -121,12 +114,11 @@ export default {
     gap: .7em;
     padding: .4em 0;
     text-decoration: none;
-    color: lightgray;
     }
 
     li:hover {
         /* background-color: rgb(49, 111, 255); */
-        background-color: white;
+        background-color: #CDE77F;
     }
     
     .menu-item{
@@ -141,25 +133,11 @@ export default {
         width: 18em;
         height: 18em;
         margin: 0 2em 0 10em;
-        color: white;
     }
 
-    li span{
+    span{
         font-size: 1rem;
-        color: lightgrey;
     }
 
-    li:hover span{
-        color: #4361EE;
-    }
-
-    li img{
-        /* change the color of the svg to white */
-        filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
-    }
-
-    li:hover img{
-        /* change the color of the svg to #4361EE */
-        filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
-    }
 </style>
+

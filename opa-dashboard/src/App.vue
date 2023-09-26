@@ -1,20 +1,20 @@
 <template>
   <notifications 
-  :closeOnClick = true
-  :pauseOnHover = true />
+  :close-on-click = true
+  :pause-on-hover = true />
   <div class="wrapper">
-    <Sidebar v-if="showSidebar"/>
+    <SideBar v-if="showSidebar"/>
     <router-view/>
   </div>
 </template>
 
 <script>
-  import Sidebar from './components/Sidebar.vue';
+  import SideBar from './components/SideBar.vue';
   export default {
     name: 'App',
 
     components: {
-      Sidebar,
+      SideBar,
     },
 
     data(){
@@ -24,7 +24,7 @@
     },
 
     watch: {
-      '$route'(to, from) {
+      '$route'(to) {
         this.showSidebar = to.name !== 'editor';
       }
     }

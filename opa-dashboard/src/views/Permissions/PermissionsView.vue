@@ -1,5 +1,5 @@
 <template>
-  <div class="spinner-container" v-if='isLoading'>
+  <div v-if='isLoading' class="spinner-container">
     <fulfilling-bouncing-circle-spinner :animation-duration="2000" :size="60" color="#0B3954" />
   </div>
 
@@ -10,14 +10,14 @@
     </div>
 
     <div class="top-container">
-      <input type="text" placeholder="Search for a Permission" v-model="searchTerm">
+      <input v-model="searchTerm" type="text" placeholder="Search for a Permission">
       <div class="action-btns">
         <button class="reset" @click="resetChanges">Reset Changes</button>
         <button class="submit" @click="saveChanges">Save Changes</button>
       </div>
     </div>
 
-    <div class="table-container" v-if="Object.keys(permissions).length">
+    <div v-if="Object.keys(permissions).length" class="table-container">
       <table>
         <thead>
           <tr>
@@ -36,10 +36,11 @@
               <td v-for="role in allRoles" :key="role + resource"></td>
             </tr>
             <!-- <tr v-for="(roles, action) in actions" :key="action"> -->
-            <tr v-for="action in actions" :key="action" v-show="showScopes[resource]">
+            <tr v-for="action in actions" v-show="showScopes[resource]" :key="action">
               <td>{{ action }}</td>
               <td v-for="role in allRoles" :key="role + action" class="checkbox-td">
-                <input type="checkbox" :checked="hasPermission(resource, action, role)"
+                <input
+type="checkbox" :checked="hasPermission(resource, action, role)"
                   @change="togglePermission(resource, action, role)" />
               </td>
             </tr>
@@ -90,6 +91,10 @@ interface Resource {
 export default defineComponent({
   name: "PermissionsView",
 
+  components: {
+    FulfillingBouncingCircleSpinner
+  },
+
   data() {
     return {
       /**
@@ -131,10 +136,6 @@ export default defineComponent({
       resources: {} as Resource,
 
     };
-  },
-
-  components: {
-    FulfillingBouncingCircleSpinner
   },
 
   computed: {
@@ -187,6 +188,16 @@ export default defineComponent({
       }
       return matrix;
     },
+  },
+  mounted() {
+    /**
+     * Fetch the permissions, roles and resources when the component is mounted. If any roles or resources
+     * are not present in the permissions retrieved from the backend, then they are added to the permissions table
+     * after they are fetched from the backend. 
+     */
+    this.fetchPermissions()
+    this.fetchRoles()
+    this.fetchResources()
   },
   methods: {
     /**
@@ -380,16 +391,6 @@ export default defineComponent({
         console.log(error)
       }
     }
-  },
-  mounted() {
-    /**
-     * Fetch the permissions, roles and resources when the component is mounted. If any roles or resources
-     * are not present in the permissions retrieved from the backend, then they are added to the permissions table
-     * after they are fetched from the backend. 
-     */
-    this.fetchPermissions()
-    this.fetchRoles()
-    this.fetchResources()
   }
 });
 </script>

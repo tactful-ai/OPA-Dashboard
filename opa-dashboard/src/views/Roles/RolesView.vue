@@ -2,12 +2,12 @@
     <transition name="fade">
         <RoleModal 
         v-if="showModal" 
+        mode="add" 
         @close="toggleModal" 
-        @add="displayRoles" 
-        mode="add" />
+        @add="displayRoles" />
     </transition>
 
-    <div class="spinner-container" v-show='isLoading'>
+    <div v-show='isLoading' class="spinner-container">
         <fulfilling-bouncing-circle-spinner
         :animation-duration="2000"
         :size="60"
@@ -21,10 +21,10 @@
             <span> Roles </span>
         </div>
         <div class="btns-container">
-            <input type="text" placeholder="Search for a Role" v-model="searchTerm">
-            <button @click.exact="toggleModal" class='add-role'>Add +</button>
+            <input v-model="searchTerm" type="text" placeholder="Search for a Role">
+            <button class='add-role' @click.exact="toggleModal">Add +</button>
         </div>
-        <div class="table-container" v-if="roles.length">
+        <div v-if="roles.length" class="table-container">
             <table>
                 <thead>
                     <tr>
@@ -33,12 +33,13 @@
                     </tr>
                 </thead>
                 <tbody v-for="role in filteredRoles" :key='role.role'>
-                    <RoleModal v-show="selectedRole === role" 
-                    @close="selectedRole = null" 
-                    @add="displayRoles" 
-                    :selected_role_name="role.role" 
-                    :selected_role_description="role.description"
-                    mode="edit"/>
+                    <RoleModal
+                    v-show="selectedRole === role" 
+                    :selectedRoleName="role.role" 
+                    :selectedRoleDescription="role.description" 
+                    mode="edit" 
+                    @close="selectedRole = null"
+                    @add="displayRoles"/>
                     <tr @click= "selectedRole = role">
                         <td>{{ role.role }}</td>
                         <td>{{ role.description }}</td>
@@ -120,6 +121,9 @@ export default defineComponent({
             })
         }
     },
+    mounted() {
+        this.displayRoles()
+    },
 
     methods:{
         /**
@@ -180,9 +184,6 @@ export default defineComponent({
                 this.isLoading = false
             }
         }
-    },
-    mounted() {
-        this.displayRoles()
     }
 })
 </script>

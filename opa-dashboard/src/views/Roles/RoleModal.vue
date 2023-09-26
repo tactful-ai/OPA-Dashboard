@@ -1,7 +1,7 @@
 <template>
     <div class="backdrop" @click.self="closeModal">
 
-        <div class="spinner-container" v-show='isLoading'>
+        <div v-show='isLoading' class="spinner-container">
             <fulfilling-bouncing-circle-spinner
             :animation-duration="2000"
             :size="60"
@@ -14,9 +14,9 @@
             <h1 v-else-if="mode === 'edit'">Edit Role</h1>
             <form class="actions" @submit.prevent="handleAdd">
                 <label for="">Role Name: </label>
-                <input type="text" v-model="role_name">
+                <input v-model="roleName" type="text">
                 <label for="">Role Description: </label>
-                <textarea v-model="role_description"> </textarea>
+                <textarea v-model="roleDescription"> </textarea>
                 <div class="btns-container">
                     <button class="close" @click.prevent="closeModal">Cancel</button>
                     <button v-if="mode === 'add'">Add Role</button>
@@ -47,13 +47,17 @@ const config = {
  */
 export default {
     name: 'RoleModal',
+
+    components: {
+        FulfillingBouncingCircleSpinner
+    },
     
     props: {
         /**
          * The name of the role to be edited when the user click on a table row. 
          * Passed to the modal component as a prop when the mode is edit
          */
-        selected_role_name: {
+        selectedRoleName: {
             type: String,
             default: ''
         }, 
@@ -61,7 +65,7 @@ export default {
          * The description of the role to be edited when the user click on a table row. 
          * Passed to the modal component as a prop when the mode is edit
          */
-        selected_role_description: {
+        selectedRoleDescription: {
             type: String,
             default: ''
         }, 
@@ -70,13 +74,11 @@ export default {
          * @values add, edit
          */
         mode:{
-            type: String
+            type: String,
+            default: 'add'
         }
     },
-
-    components: {
-        FulfillingBouncingCircleSpinner
-    },
+emits: ['close', 'add'],
 
     data(){
         return{
@@ -84,18 +86,25 @@ export default {
              * The name of the role to be added, data-bound to the input field
              * @model
              */
-            role_name: '',
+            roleName: '',
             /**
              * The description of the role to be added, data-bound to the input field
              * @model
              */
-            role_description: '',
+            roleDescription: '',
             /**
              * A boolean to display a spinner when the roles are being fetched or updated
              * @model
              */
             isLoading: false
         }
+    },
+    mounted() {
+        /**
+         * Populates the input fields with the selected role data when the mode is edit
+         */
+        this.roleName = this.selectedRoleName
+        this.roleDescription = this.selectedRoleDescription
     },
     methods: {
         /**
@@ -112,7 +121,7 @@ export default {
 
         /**
          * Sends a POST request to the backend to add a new role. The new role object
-         * uses the role_name and role_description v-models data-bound to the input fields
+         * uses the roleName and roleDescription v-models data-bound to the input fields
          * @public
          */
         async handleAdd(){
@@ -120,11 +129,11 @@ export default {
             try{
                 console.log('adding a new role...')
                 const data = {
-                    "role": this.role_name,
-                    "description": this.role_description
+                    "role": this.roleName,
+                    "description": this.roleDescription
                 }
-                console.log(this.role_name)
-                console.log(this.role_description)
+                console.log(this.roleName)
+                console.log(this.roleDescription)
                 console.log(data)
                 const response = await axios.post(url, data, config)
                 console.log(response)
@@ -155,7 +164,7 @@ export default {
 
         /**
          * Sends a DELETE request to the backend to delete a role. The role to be deleted
-         * uses the role_name v-model data-bound to the input field, which is populated through the selected_role_name prop
+         * uses the roleName v-model data-bound to the input field, which is populated through the selectedRoleName prop
          * when the user clicks on a table row 
          * @public
          */
@@ -164,8 +173,8 @@ export default {
             try{
                 console.log('deleting a role...')
                 const data = {
-                "role": this.role_name,
-                // "description": this.role_description
+                "role": this.roleName,
+                // "description": this.roleDescription
                 }
                 console.log(data)
                 const response = await axios.delete(url, {data: data, headers: config.headers})
@@ -192,8 +201,8 @@ export default {
 
         /**
          * Sends a PUT request to the backend to edit a role. The role to be edited
-         * uses the role_name and role_description v-models data-bound to the input fields, which are populated through the 
-         * selected_role_name and selected_role_description props when the user clicks on a table row 
+         * uses the roleName and roleDescription v-models data-bound to the input fields, which are populated through the 
+         * selectedRoleName and selectedRoleDescription props when the user clicks on a table row 
          * @public
          */
         async handleEdit(){
@@ -201,9 +210,9 @@ export default {
             try{
                 console.log('editing a role...')
                 const data = {
-                    "role": this.selected_role_name,
-                    "newRole":this.role_name,
-                    "newRoleDescription": this.role_description
+                    "role": this.selectedRoleName,
+                    "newRole":this.roleName,
+                    "newRoleDescription": this.roleDescription
                 }
                 console.log(data)
                 const response = await axios.put(url,data,config)
@@ -222,13 +231,6 @@ export default {
                 this.isLoading = false
             }
         }
-    },
-    mounted() {
-        /**
-         * Populates the input fields with the selected role data when the mode is edit
-         */
-        this.role_name = this.selected_role_name
-        this.role_description = this.selected_role_description
     }
 }
 </script>

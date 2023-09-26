@@ -8,7 +8,7 @@
 <script>
 import sizeMixin from './sizeMixin'
 export default {
-	name: 'app-button',
+	name: 'AppButton',
 	mixins: [sizeMixin],
 	props: {
 		/**
@@ -26,8 +26,10 @@ export default {
 			default: 'white'
 		},
 		/** @deprecated Use color instead */
+		// eslint-disable-next-line vue/require-default-prop
 		oldColor: String
 	},
+emits: ['click', 'gator'],
 	computed: {
 		styles() {
 			return {
