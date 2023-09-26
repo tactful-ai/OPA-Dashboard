@@ -291,7 +291,8 @@ export default defineComponent({
      * whenever the code is changed.
      * @public
      */
-    pushToEditedFiles(){
+    pushToEditedFiles(e:any){
+      console.log(this.directoryStructure)
       const index = this.editedFiles.findIndex(file => file.ID === this.activeFileId);
       // if the index is not -1, replace the code
       if (index !== -1){
@@ -302,13 +303,48 @@ export default defineComponent({
           code: this.nodes[String(this.activeFileId)].code
         })
       }
-      console.log(this.editedFiles)
+    },
+    /**
+     * Checks if the files in the edited files array have actually been modified by the user.
+     * If the files have not been modified, it removes them from the edited files array and notifies the user.
+     * Returns true if all files have not been modified, false otherwise
+     * @public
+     */
+    checkEditedFiles(): boolean{
+      const unmodifiedFiles: EditedFile[] = [];
+      this.editedFiles.forEach((file, index) => {
+        const directoryFile = this.directoryStructure.find(item => item.ID === file.ID);
+        if (directoryFile && directoryFile.code === file.code){
+          this.editedFiles.splice(index, 1);
+          unmodifiedFiles.push(file);
+        }
+      })
+      if (unmodifiedFiles.length > 0){
+        this.$notify({
+          title: 'Warning',
+          text: `The following files have not been modified: ${unmodifiedFiles.map(file => file.ID).join(', ')}`,
+          type: 'warn'
+        })
+      }
+      if (this.editedFiles.length === 0){
+        this.$notify({
+          title: 'Warning',
+          text: `No files have been edited`,
+          type: 'warn'
+        })
+        return true;
+      } else {
+        return false;
+      }
     },
     /**
      * Saves the files that have been edited by the user to the backend. Triggered by the save button.
      * @public
      */
     async saveFiles(){
+      if (this.checkEditedFiles()){
+        return;
+      }
       this.isLoading = true;
       try {
         const data = {

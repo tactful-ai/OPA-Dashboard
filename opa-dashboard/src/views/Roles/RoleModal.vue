@@ -30,7 +30,7 @@
     </div>
 </template>
 
-<script lang='ts'>
+<script>
 import axios from 'axios'
 import { FulfillingBouncingCircleSpinner } from 'epic-spinners'
 
@@ -140,7 +140,7 @@ export default {
                  */
                 this.$emit('add')
                 this.closeModal()
-            } catch (err: any){
+            } catch (err){
                 console.log(err)
                 this.$notify({
                     title: 'Error',
@@ -177,7 +177,7 @@ export default {
                 });
                 this.$emit('add')
                 this.closeModal()
-            } catch (err: any){
+            } catch (err){
                 console.log(err)
                 this.$notify({
                     title: 'Error',
@@ -210,7 +210,7 @@ export default {
                 console.log(response)
                 this.$emit('add')
                 this.closeModal()
-            } catch (err: any){
+            } catch (err){
                 console.log(err)
                 this.$notify({
                     title: 'Error',

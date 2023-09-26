@@ -40,7 +40,7 @@ const config = {
 }
 
 interface tagResponse{
-    tags: string[],
+    sortedTags: string[],
     newTag: string
 }
 /**
@@ -82,7 +82,6 @@ export default defineComponent({
          * @public
          */
         async submitForm() {
-            this.isLoading = true
             // check if the tag already exists, if it does, notify the user
             const tagVersion = `v${this.tag.major}.${this.tag.minor}.${this.tag.patch}`;
             if (this.existingTags.includes(tagVersion)) {
@@ -93,6 +92,7 @@ export default defineComponent({
                 });
                 return;
             }
+            this.isLoading = true
             try {
                 const response = await axios.post(url, { tag: tagVersion }, config);
                 console.log(response);
@@ -127,13 +127,14 @@ export default defineComponent({
             this.isLoading = true
             try{
                 const response = await axios.get(url, config);
-                this.existingTags = response.data.tags;
+                this.existingTags = response.data.sortedTags;
                 console.log(response);
                 const newTag = response.data.newTag;
                 const tagArray = newTag.split('.');
                 this.tag.major = tagArray[0].slice(1);
                 this.tag.minor = tagArray[1];
                 this.tag.patch = tagArray[2];
+                console.log(this.existingTags);
             } catch (error: any) {
                 let message = ''
                 if (error.response) {
