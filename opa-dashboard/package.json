@@ -5,15 +5,34 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "vue-cli-service test:unit",
+    "styleguide": "vue-cli-service styleguidist",
+    "styleguide:build": "vue-cli-service styleguidist:build",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
+    "format": "prettier .  --write"
   },
   "dependencies": {
+    "@codemirror/lang-javascript": "^6.2.1",
+    "@codemirror/theme-one-dark": "^6.1.2",
+    "@grapoza/vue-tree": "^5.2.0",
+    "@kyvg/vue3-notification": "^3.0.2",
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3",
+    "axios": "^1.4.0",
+    "codemirror": "^6.0.1",
     "core-js": "^3.8.3",
+    "epic-spinners": "^2.0.0",
+    "flush-promises": "^1.0.2",
+    "simple-code-editor": "^2.0.8",
     "vue": "^3.2.13",
+    "vue-codemirror": "^6.1.1",
     "vue-router": "^4.0.3",
+    "vue3-treeview": "^0.4.1",
+    "vuejs-tree": "^3.0.2",
     "vuex": "^4.0.0"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.22.20",
     "@types/jest": "^27.0.1",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-router": "~5.0.0",
@@ -24,8 +43,15 @@
     "@vue/test-utils": "^2.0.0-0",
     "@vue/vue3-jest": "^27.0.0-alpha.1",
     "babel-jest": "^27.0.6",
+    "eslint": "^8.50.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-vue": "^9.17.0",
     "jest": "^27.0.5",
+    "prettier": "3.0.3",
     "ts-jest": "^27.0.4",
-    "typescript": "~4.5.5"
+    "typescript": "~4.5.5",
+    "vue-cli-plugin-styleguidist": "~4.72.4",
+    "vue-styleguidist": "^4.72.4",
+    "webpack": "^5.88.2"
   }
 }

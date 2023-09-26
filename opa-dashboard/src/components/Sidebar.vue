@@ -1,36 +1,54 @@
 <template>
     <nav>
-        <img src="./../assets/dstnyEngage-logo.webp" alt="">
-            <ul>
-                <li>
-                    <router-link to="/" class='menu-item'>
-                        <img src="./../assets/dashboard.svg" alt="">
-                        <span> Dashboard </span>
-                    </router-link> 
-                </li>
-                <li>
-                    <router-link to="/roles" class='menu-item'>
-                        <img src="./../assets/roles.svg" alt="">
-                        <span> Roles </span>
-                    </router-link> 
-                </li>
-                <li>
-                    <router-link to="/resources" class='menu-item'>
-                        <img src="./../assets/resources.svg" alt="">
-                        <span> Resources </span>
-                    </router-link> 
-                </li>
-                <li>
-                    <router-link to="/permissions" class='menu-item'>
-                        <img src="./../assets/permissions.svg" alt="">
-                        <span> Permissions </span>
-                    </router-link> 
-                </li>
-            </ul>
+        <div class="logo-container">
+            <img src="./../assets/dstnyEngage-logo.webp" alt="">
+        </div>
+        <ul>
+            <!-- <li>
+                <router-link to="/" class='menu-item'>
+                    <img src="./../assets/dashboard.svg" alt="">
+                    <span> Dashboard </span>
+                </router-link> 
+            </li> -->
+            <li>
+                <router-link to="/roles" class='menu-item'>
+                    <img src="./../assets/roles.svg" alt="">
+                    <span> Roles </span>
+                </router-link> 
+            </li>
+            <li>
+                <router-link to="/resources" class='menu-item'>
+                    <img src="./../assets/resources.svg" alt="">
+                    <span> Resources </span>
+                </router-link> 
+            </li>
+            <li>
+                <router-link to="/permissions" class='menu-item'>
+                    <img src="./../assets/permissions.svg" alt="">
+                    <span> Permissions </span>
+                </router-link> 
+            </li>
+            <li>
+                <router-link to="/tag" class='menu-item'>
+                    <img src="./../assets/tag.svg" alt="">
+                    <span> Tags </span>
+                </router-link>
+            </li>
+            <li>
+                <router-link to="/editor" class='menu-item'>
+                    <img src="./../assets/editor.svg" alt="">
+                    <span> Code Editor </span>
+                </router-link> 
+            </li>
+        </ul>
     </nav>
 </template>
 
-<script>
+<script lang="ts">
+/**
+ * A component used in all pages to display the sidebar for navigation.
+ * @displayName Side Bar
+ */
 export default {
 
 }
@@ -99,7 +117,8 @@ export default {
     }
 
     li:hover {
-        background-color: rgb(49, 111, 255);
+        /* background-color: rgb(49, 111, 255); */
+        background-color: #CDE77F;
     }
     
     .menu-item{
@@ -121,3 +140,4 @@ export default {
     }
 
 </style>
+

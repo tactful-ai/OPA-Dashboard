@@ -1,14 +1,17 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import RolesView from '../views/RolesView.vue'
-import ResourcesView from '../views/ResourcesView.vue'
-import PermissionsView from '../views/PermissionsView.vue'
+import RolesView from '../views/Roles/RolesView.vue'
+import ResourcesView from '../views/Resources/ResourcesView.vue'
+import PermissionsView from '../views/Permissions/PermissionsView.vue'
+import EditorView from '../views/Editor/EditorView.vue'
+import TagsView from '../views/Tags/TagsView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'home',
-    component: HomeView
+    redirect: '/roles'
+    // name: 'home',
+    // component: HomeView
   },
   {
     path: '/roles',
@@ -28,6 +31,16 @@ const routes: Array<RouteRecordRaw> = [
     path: '/permissions',
     name: 'permissions',
     component: PermissionsView
+  },
+  {
+    path: '/editor',
+    name: 'editor',
+    component: EditorView
+  },
+  {
+    path: '/tag',
+    name: 'tag',
+    component: TagsView
   }
 ]
 
