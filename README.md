@@ -21,6 +21,11 @@ You will need to have Node installed to run this project.
 2. Run the style guide
 ` npm run styleguide `
 
+## Connecting to a backend
+
+During development, the dashboard has been connecting to the backend using ngrok. Create a `.env` file in the `/opa-dashboard/` directory and set the `VUE_APP_BASE_URL` variable to your backend link
+`VUE_APP_BASE_URL = your backend link`
+
 # Built With
 
 <div align="center">
