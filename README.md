@@ -2,6 +2,8 @@
 
 The Open Policy Agent is an open-source, general-purpose policy engine that unifies policy enforcement across the stack. OPA [decouples](https://www.openpolicyagent.org/docs/latest/philosophy#policy-decoupling) policy decision-making from policy enforcement and application logic. At Dstny Engage, making changes to permissions in the OPA service is a cumbersome and time-consuming process that requires modifying code and deploying it. This project aims to develop a centralized dashboard for a middleware between Dstny Engage's services and the open policy agent, allowing for user-friendly policy modifications in real-time.
 
+You can also check out the user manual in the repository's wiki
+
 # Running the application
 You will need to have Node installed to run this project.
 1. Navigate to the project folder
