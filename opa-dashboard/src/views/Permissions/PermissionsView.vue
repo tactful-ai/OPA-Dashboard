@@ -433,8 +433,8 @@ export default defineComponent({
   overflow-y: scroll;
   /* height: fit-content;
   width: fit-content; */
-  max-height: 75%;
-  max-width: 90%;
+  max-height: 90%;
+  max-width: 100%;
 }
 
 table {
@@ -445,6 +445,7 @@ table {
   /* overflow-y: scroll;
   overflow-x: scroll; */
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 thead {
@@ -465,6 +466,14 @@ th {
 td {
   padding: 1rem 2rem;
   font-size: 1rem;
+}
+
+td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  box-shadow:  5px 0 10px black;
+  background-color: #f2f8ff;
 }
 
 /* tbody td { */
@@ -543,7 +552,6 @@ input[type="checkbox"] {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2em;
-  width: 100%;
 }
 
 input {
